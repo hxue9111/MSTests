@@ -14,8 +14,6 @@ public class TapTestActivity extends Activity {
 
     String left_hand_test_label = "Press the button to start left hand test";
     String right_hand_test_label = "Press the button to start right hand test";
-    String tap_button_label = "Tap here";
-    String time_left_label = "Time Left: ";
     String start_label = "Push to start test";
 
     Button tap_test_button;
@@ -45,9 +43,10 @@ public class TapTestActivity extends Activity {
         });
     }
 
+    //Start countdown
     private void setCountdownView() {
         tap_test_button.setVisibility(View.GONE);
-        new CountDownTimer(3000, 1000) {
+        new CountDownTimer(4000, 1000) {
 
             public void onTick(long millisUntilFinished) {
                 text_prompt.setText("Test starting in: " + millisUntilFinished / 1000);
@@ -64,7 +63,7 @@ public class TapTestActivity extends Activity {
         tap_test_button.setVisibility(View.VISIBLE);
         captureTaps();
     }
-
+    //Show results
     private void setResultView() {
         tap_test_button.setVisibility(View.INVISIBLE);
         text_prompt.setText("Results:\nTaps with left hand: " + leftHandTaps + "\nTaps with right hand: " + rightHandTaps);
@@ -81,7 +80,7 @@ public class TapTestActivity extends Activity {
         new CountDownTimer(10000, 1000) {
 
             public void onTick(long millisUntilFinished) {
-                text_prompt.setText("seconds remaining: " + millisUntilFinished / 1000 + "\nTaps so far: " + taps);
+                text_prompt.setText("seconds remaining: " + millisUntilFinished / 1000);
             }
 
             public void onFinish() {
