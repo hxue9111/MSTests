@@ -71,6 +71,7 @@ public class TapTestActivity extends Activity {
     // Enable button to count taps
     private int captureTaps() {
         taps = 0;
+        text_prompt.setText("Tap here");
         tap_test_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
