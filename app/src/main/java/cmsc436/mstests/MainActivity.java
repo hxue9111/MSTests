@@ -20,13 +20,22 @@ public class MainActivity extends Activity {
 
     private void init(){
         Button tap_test_button = (Button)findViewById(R.id.tap_test_start);
+        Button spiral_test_button = (Button)findViewById(R.id.spiral_test_start);
 
         final Intent start_tap_test = new Intent(this, TapTestActivity.class);
+        final Intent start_spiral_test = new Intent(this, SpiralTestActivity.class);
 
         tap_test_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(start_tap_test);
+            }
+        });
+
+        spiral_test_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(start_spiral_test);
             }
         });
     }
