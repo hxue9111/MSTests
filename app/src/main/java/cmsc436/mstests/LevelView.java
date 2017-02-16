@@ -16,6 +16,9 @@ import android.view.View;
 public class LevelView extends View {
     Paint targetPaint, ballPaint;
     int height, width, centerX, centerY, ballX, ballY; // View should be square
+    float offset_x, offset_y;
+
+
     public LevelView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
@@ -30,20 +33,40 @@ public class LevelView extends View {
         height = getHeight();
         centerX = width/2;
         centerY = height/2;
-        ballX = centerX;
-        ballY = centerY;
+        ballX = getWidth()/2;
+        ballY = getHeight()/2;
+        setBackgroundColor(Color.GREEN);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+
         canvas.drawCircle(centerX, centerY, Math.min(width/4, height/4), targetPaint);
 
-        canvas.drawCircle(ballX, ballY, 10, ballPaint);
+        canvas.drawCircle(getWidth()/2 - offset_x, getHeight()/2 + offset_y, 40, ballPaint);
     }
 
     public void updateDrawing(float x, float y, float z) {
-        ballX += x;
+        offset_x += x;
+        offset_y += y;
+
+        if( offset_x > 0 ) {
+            offset_x = Math.min(getWidth()/2, offset_x);
+        }
+        else{
+            offset_x = Math.max(-getWidth()/2, offset_x);
+        }
+        if ( offset_y > 0 ) {
+            offset_y = Math.min(getHeight()/2, offset_y);
+        }
+        else{
+
+            offset_y = Math.max(-getHeight()/2, offset_y);
+        }
+
+
+
         invalidate();
     }
 }

@@ -89,8 +89,8 @@ public class LevelTestActivity extends Activity implements SensorEventListener {
     }
     public boolean score (float x, float y, float z) {
 
-        final int SENSITIVITY = 4;
-        double displacement = Math.abs(x) + Math.abs(y) + Math.abs(z - 9.81);
+        final int SENSITIVITY = 1;
+        double displacement = Math.abs(x) + Math.abs(y) ;
 
         if (displacement > SENSITIVITY) {
             score += displacement;
