@@ -19,6 +19,7 @@ public class LevelTestActivity extends Activity implements SensorEventListener {
     private Sensor senAccelerometer;
     float x, y, z;
     private TextView currentX, currentY, currentZ, display_score;
+    private LevelView visual;
     Button level_test_button ;
     ImageView img;
     long last_timestamp = 0;
@@ -46,6 +47,7 @@ public class LevelTestActivity extends Activity implements SensorEventListener {
             }
         });
         display_score = (TextView)findViewById(R.id.score);
+        visual = (LevelView)findViewById(R.id.visual);
 
     }
     public void levelTestStart() {
@@ -60,12 +62,6 @@ public class LevelTestActivity extends Activity implements SensorEventListener {
 
     }
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
-    }
-
-    public void displayCleanValues() {
-
-
-
     }
 
     public void onSensorChanged(SensorEvent event) {
@@ -83,34 +79,25 @@ public class LevelTestActivity extends Activity implements SensorEventListener {
             currentX.setText("Current X : " + Float.toString(x));
             currentY.setText("Current Y : " + Float.toString(y));
             currentZ.setText("Current Z : " + Float.toString(z));
-
-            score(x,y,z);
-
             display_score.setText("current score : " + score);
 
 
-//
-//            float dt = (System.nanoTime() - timestamp) / 1000000000.0f;
-//            mVelX += -x * dt;
-//            mVelY += -y * dt;
-//
-//            mPosX += mVelX * dt;
-//            mPosY += mVelY * dt;
-
-//            Particle mball = new Particle();
-//            mball.updatePosition(x,y,z,1000);
-
-
+            if(score(x,y,z)){
+               visual.updateDrawing(x,y,z);
+            }
         }
     }
-    public void score (float x, float y, float z) {
+    public boolean score (float x, float y, float z) {
 
         final int SENSITIVITY = 4;
         double displacement = Math.abs(x) + Math.abs(y) + Math.abs(z - 9.81);
 
         if (displacement > SENSITIVITY) {
             score += displacement;
+            return true;
         }
+
+        return false;
     }
 }
 

@@ -53,5 +53,9 @@
         android:layout_marginTop="87dp"
         android:id="@+id/score" />
 
-
+    <cmsc436.mstests.LevelView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:id="@+id/visual"
+        />
 </RelativeLayout>
