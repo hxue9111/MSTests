@@ -18,9 +18,20 @@ public class LevelTestActivity extends Activity implements SensorEventListener {
     private SensorManager senSensorManager;
     private Sensor senAccelerometer;
     float x, y, z;
-    private TextView currentX, currentY, currentZ;
+    private TextView currentX, currentY, currentZ, display_score;
     Button level_test_button ;
     ImageView img;
+    long last_timestamp = 0;
+    double score ;
+
+    public float mPosX;
+    public float mPosY;
+    private float mVelX;
+    private float mVelY;
+
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,7 +45,7 @@ public class LevelTestActivity extends Activity implements SensorEventListener {
                 levelTestStart();
             }
         });
-
+        display_score = (TextView)findViewById(R.id.score);
 
     }
     public void levelTestStart() {
@@ -56,18 +67,6 @@ public class LevelTestActivity extends Activity implements SensorEventListener {
 
 
     }
-    public void displayCurrentValues() {
-
-        currentX = (TextView)findViewById(R.id.display_x);
-        currentY = (TextView)findViewById(R.id.display_y);
-        currentZ = (TextView)findViewById(R.id.display_z);
-
-        currentX.setText("Current X : " + Float.toString(x));
-        currentY.setText("Current Y : " + Float.toString(y));
-        currentZ.setText("Current Z : " + Float.toString(z));
-
-    }
-
 
     public void onSensorChanged(SensorEvent event) {
         Sensor mySensor = event.sensor;
@@ -84,44 +83,34 @@ public class LevelTestActivity extends Activity implements SensorEventListener {
             currentX.setText("Current X : " + Float.toString(x));
             currentY.setText("Current Y : " + Float.toString(y));
             currentZ.setText("Current Z : " + Float.toString(z));
+
+            score(x,y,z);
+
+            display_score.setText("current score : " + score);
+
+
+//
+//            float dt = (System.nanoTime() - timestamp) / 1000000000.0f;
+//            mVelX += -x * dt;
+//            mVelY += -y * dt;
+//
+//            mPosX += mVelX * dt;
+//            mPosY += mVelY * dt;
+
+//            Particle mball = new Particle();
+//            mball.updatePosition(x,y,z,1000);
+
+
         }
     }
-    public class Particle {
-        /* coefficient of restitution */
-        private static final float COR = 0.7f;
+    public void score (float x, float y, float z) {
 
-        public float mPosX;
-        public float mPosY;
-        private float mVelX;
-        private float mVelY;
+        final int SENSITIVITY = 4;
+        double displacement = Math.abs(x) + Math.abs(y) + Math.abs(z - 9.81);
 
-        public void updatePosition(float sx, float sy, float sz, long timestamp) {
-            float dt = (System.nanoTime() - timestamp) / 1000000000.0f;
-            mVelX += -sx * dt;
-            mVelY += -sy * dt;
-
-            mPosX += mVelX * dt;
-            mPosY += mVelY * dt;
-        }
-
-        public void resolveCollisionWithBounds(float mHorizontalBound, float mVerticalBound) {
-            if (mPosX > mHorizontalBound) {
-                mPosX = mHorizontalBound;
-                mVelX = -mVelX * COR;
-            } else if (mPosX < -mHorizontalBound) {
-                mPosX = -mHorizontalBound;
-                mVelX = -mVelX * COR;
-            }
-            if (mPosY > mVerticalBound) {
-                mPosY = mVerticalBound;
-                mVelY = -mVelY * COR;
-            } else if (mPosY < -mVerticalBound) {
-                mPosY = -mVerticalBound;
-                mVelY = -mVelY * COR;
-            }
+        if (displacement > SENSITIVITY) {
+            score += displacement;
         }
     }
-
-
 }
 

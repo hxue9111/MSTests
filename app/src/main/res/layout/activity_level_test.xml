@@ -44,5 +44,14 @@
         android:layout_centerHorizontal="true"
         android:id="@+id/level_test_start" />
 
+    <TextView
+        android:text="TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/level_test_start"
+        android:layout_alignStart="@+id/level_test_start"
+        android:layout_marginTop="87dp"
+        android:id="@+id/score" />
+
 
 </RelativeLayout>
