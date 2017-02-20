@@ -48,10 +48,12 @@ public class LevelTestActivity extends Activity implements SensorEventListener {
         });
         display_score = (TextView)findViewById(R.id.score);
         visual = (LevelView)findViewById(R.id.visual);
+        visual.setVisibility(View.INVISIBLE);
 
     }
     public void levelTestStart() {
         level_test_button.setVisibility(View.INVISIBLE);
+        visual.setVisibility(View.VISIBLE);
 //        ImageView img = (ImageView)findViewById(R.id.target);
 //        img.setVisibility(View.VISIBLE);
 
@@ -72,14 +74,14 @@ public class LevelTestActivity extends Activity implements SensorEventListener {
             y = event.values[1];
             z = event.values[2];
 
-            currentX = (TextView)findViewById(R.id.display_x);
-            currentY = (TextView)findViewById(R.id.display_y);
-            currentZ = (TextView)findViewById(R.id.display_z);
-
-            currentX.setText("Current X : " + Float.toString(x));
-            currentY.setText("Current Y : " + Float.toString(y));
-            currentZ.setText("Current Z : " + Float.toString(z));
-            display_score.setText("current score : " + score);
+//            currentX = (TextView)findViewById(R.id.display_x);
+//            currentY = (TextView)findViewById(R.id.display_y);
+//            currentZ = (TextView)findViewById(R.id.display_z);
+//
+//            currentX.setText("Current X : " + Float.toString(x));
+//            currentY.setText("Current Y : " + Float.toString(y));
+//            currentZ.setText("Current Z : " + Float.toString(z));
+            display_score.setText("current score : " + Math.round(score));
 
 
             if(score(x,y,z)){
