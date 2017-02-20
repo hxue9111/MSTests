@@ -8,6 +8,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.CountDownTimer;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -18,7 +19,7 @@ public class LevelTestActivity extends Activity implements SensorEventListener {
     private SensorManager senSensorManager;
     private Sensor senAccelerometer;
     float x, y, z;
-    private TextView currentX, currentY, currentZ, display_score;
+    private TextView currentX, currentY, currentZ, display_score, final_score, text_prompt;
     private LevelView visual;
     Button level_test_button ;
     ImageView img;
@@ -39,29 +40,64 @@ public class LevelTestActivity extends Activity implements SensorEventListener {
         setContentView(R.layout.activity_level_test);
 
         level_test_button = (Button)findViewById(R.id.level_test_start);
-
+        text_prompt = (TextView)findViewById(R.id.text_promt);
         level_test_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                levelTestStart();
+                setCountdownView();
             }
         });
+
         display_score = (TextView)findViewById(R.id.score);
         visual = (LevelView)findViewById(R.id.visual);
         visual.setVisibility(View.INVISIBLE);
 
     }
-    public void levelTestStart() {
-        level_test_button.setVisibility(View.INVISIBLE);
-        visual.setVisibility(View.VISIBLE);
-//        ImageView img = (ImageView)findViewById(R.id.target);
-//        img.setVisibility(View.VISIBLE);
+    private void setCountdownView() {
+        level_test_button.setVisibility(View.GONE);
+        new CountDownTimer(4000, 1000) {
 
+            public void onTick(long millisUntilFinished) {
+                text_prompt.setText("Test starting in: " + millisUntilFinished / 1000);
+            }
+
+            public void onFinish() {
+                levelTestStart();
+            }
+        }.start();
+    }
+
+    public void resultVIew() {
+
+        final_score = (TextView)findViewById(R.id.final_score_text);
+        final_score.setText("Your score is : " + Math.round(score));
+    }
+    public void levelTestStart() {
+        //        level_test_button.setVisibility(View.INVISIBLE);
+        visual.setVisibility(View.VISIBLE);
 
         senSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         senAccelerometer = senSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         senSensorManager.registerListener(this, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
 
+
+        new CountDownTimer(20000, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+                text_prompt.setText("seconds remaining: " + millisUntilFinished / 1000);
+            }
+
+            public void onFinish() {
+                finish();
+            }
+        }.start();
+    }
+    public void finish() {
+        visual.setVisibility(View.INVISIBLE);
+        text_prompt.setVisibility(View.INVISIBLE);
+        resultVIew();
+        display_score.setVisibility(View.INVISIBLE);
+        senSensorManager.unregisterListener(this);
     }
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
     }
