@@ -35,7 +35,8 @@ public class LevelView extends View {
         centerY = height/2;
         ballX = getWidth()/2;
         ballY = getHeight()/2;
-        setBackgroundColor(Color.GREEN);
+        //setBackgroundColor(Color.GREEN);
+        setBackgroundResource(R.drawable.ic_bullseye1);
     }
 
     @Override
