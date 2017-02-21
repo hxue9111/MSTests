@@ -67,4 +67,11 @@ public class LevelView extends View {
 
         invalidate();
     }
+
+    protected void reset() {
+        offset_x = 0;
+        offset_y = 0;
+        updateDrawing(0,0,0);
+    }
+
 }

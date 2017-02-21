@@ -75,8 +75,8 @@ public class LevelTestActivity extends Activity {
             }
 
             public void onFinish() {
-
                 setTimerView();
+                visual.reset();
             }
         }.start();
     }
@@ -97,6 +97,7 @@ public class LevelTestActivity extends Activity {
                     left_hand_score  = score;
                     senSensorManager.unregisterListener(listener);
                     setStartView(right_hand_test_label);
+
                 } else if (right_hand_score == -1){
                     right_hand_score = score ;
                     senSensorManager.unregisterListener(listener);
