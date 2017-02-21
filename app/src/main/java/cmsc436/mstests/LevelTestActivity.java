@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.os.CountDownTimer;
 import android.view.View;
 import android.widget.Button;
@@ -64,10 +63,26 @@ public class LevelTestActivity extends Activity {
         });
 
     }
-    //Start countdown
-    private double setCountdownView() {
-        score = 0;
+
+
+    //countdown until test begins
+    private void setCountdownView() {
         level_test_button.setVisibility(View.GONE);
+        new CountDownTimer(3000, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+                text_prompt.setText("Test Starting in: " + millisUntilFinished / 1000);
+            }
+
+            public void onFinish() {
+
+                setTimerView();
+            }
+        }.start();
+    }
+    //Start timer
+    private double setTimerView() {
+        score = 0;
         visual.setVisibility(View.VISIBLE);
         new CountDownTimer(10000, 1000) {
 
