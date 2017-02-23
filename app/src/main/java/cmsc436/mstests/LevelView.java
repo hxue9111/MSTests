@@ -35,7 +35,6 @@ public class LevelView extends View {
         centerY = height/2;
         ballX = getWidth()/2;
         ballY = getHeight()/2;
-        setBackgroundColor(Color.GREEN);
     }
 
     @Override
@@ -43,7 +42,6 @@ public class LevelView extends View {
         super.onDraw(canvas);
 
         canvas.drawCircle(centerX, centerY, Math.min(width/4, height/4), targetPaint);
-
         canvas.drawCircle(getWidth()/2 - offset_x, getHeight()/2 + offset_y, 40, ballPaint);
     }
 
@@ -69,4 +67,11 @@ public class LevelView extends View {
 
         invalidate();
     }
+
+    protected void reset() {
+        offset_x = 0;
+        offset_y = 0;
+        updateDrawing(0,0,0);
+    }
+
 }
