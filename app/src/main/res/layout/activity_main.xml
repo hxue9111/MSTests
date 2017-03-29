@@ -34,4 +34,14 @@
         android:layout_below="@+id/spiral_test_start"
         android:layout_centerHorizontal="true" />
 
+    <Button
+        android:text="Bicep Leg Test"
+        android:textSize="30dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="34dp"
+        android:id="@+id/bicep_leg_test_start"
+        android:layout_below="@+id/level_test_start"
+        android:layout_centerHorizontal="true" />
+
 </RelativeLayout>
