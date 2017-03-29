@@ -22,8 +22,10 @@
             android:name=".TapTestActivity"
             android:label="@string/title_activity_tap_test" />
         <activity android:name=".SpiralTestActivity" />
-        <activity android:name=".LevelTestActivity"
-            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".LevelTestActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".BicepLegTestActivity"></activity>
     </application>
 
 </manifest>
