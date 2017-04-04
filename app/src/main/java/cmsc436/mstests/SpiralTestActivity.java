@@ -2,6 +2,7 @@ package cmsc436.mstests;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -65,6 +66,8 @@ public class SpiralTestActivity extends Activity {
             @Override
             public void onClick(View v) {
                 canvas.saveDrawing();
+                sendToSheets(0, Sheets.UpdateType.LH_SPIRAL.ordinal());
+                sendToSheets(0, Sheets.UpdateType.RH_SPIRAL.ordinal());
                 finish();
             }
         });
@@ -72,6 +75,18 @@ public class SpiralTestActivity extends Activity {
 
     }
 
+    private void sendToSheets(int scores, int sheet) {
+        // Send data to sheets
+        Intent sheets = new Intent(this, Sheets.class);
+//
+        float temp = 1011;
+
+        sheets.putExtra(Sheets.EXTRA_VALUE, temp);
+        sheets.putExtra(Sheets.EXTRA_USER, getString(R.string.patientID));
+        sheets.putExtra(Sheets.EXTRA_TYPE, sheet);
+
+        startActivity(sheets);
+    }
 
     public class DrawingView extends View {
 

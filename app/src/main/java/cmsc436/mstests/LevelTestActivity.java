@@ -2,6 +2,7 @@ package cmsc436.mstests;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.SensorManager;
 import android.app.Activity;
 import android.os.Build;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 
 
 @TargetApi(Build.VERSION_CODES.CUPCAKE)
@@ -112,10 +114,24 @@ public class LevelTestActivity extends Activity {
     //set result
     public void resultView() {
        // text_prompt.setText("Your score is : " + Math.round(score));
+        sendToSheets((int) Math.round(left_hand_score), Sheets.UpdateType.LH_LEVEL.ordinal());
+        sendToSheets((int) Math.round(right_hand_score), Sheets.UpdateType.RH_LEVEL.ordinal());
+
         text_prompt.setText("Results:\n Left hand: " + Math.round(left_hand_score) +
                 "\nRight hand: " + Math.round(right_hand_score));
     }
+    private void sendToSheets(int scores, int sheet) {
+        // Send data to sheets
+        Intent sheets = new Intent(this, Sheets.class);
+//
+        float temp = 1011;
 
+        sheets.putExtra(Sheets.EXTRA_VALUE, temp);
+        sheets.putExtra(Sheets.EXTRA_USER, getString(R.string.patientID));
+        sheets.putExtra(Sheets.EXTRA_TYPE, sheet);
+
+        startActivity(sheets);
+    }
 
     private final SensorEventListener listener = new SensorEventListener() {
         @Override

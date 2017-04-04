@@ -101,6 +101,20 @@ public class BubbleActivity extends Activity {
         });
     }
 
+    private void sendToSheets(double scores, int sheet) {
+        // Send data to sheets
+        Intent sheets = new Intent(this, Sheets.class);
+
+        // just to test if it works
+        float temp = 1011;
+
+        sheets.putExtra(Sheets.EXTRA_VALUE, temp);
+        sheets.putExtra(Sheets.EXTRA_USER, getString(R.string.patientID));
+        sheets.putExtra(Sheets.EXTRA_TYPE, sheet);
+
+        startActivity(sheets);
+    }
+
     //Start countdown
     private void setCountdownView() {
         startButton.setVisibility(View.GONE);
