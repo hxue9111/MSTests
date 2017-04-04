@@ -25,7 +25,8 @@
         <activity
             android:name=".LevelTestActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".BicepLegTestActivity"></activity>
+        <activity android:name=".BicepLegTestActivity" />
+        <activity android:name=".BubbleActivity" />
     </application>
 
 </manifest>
