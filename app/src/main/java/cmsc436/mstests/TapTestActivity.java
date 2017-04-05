@@ -1,6 +1,7 @@
 package cmsc436.mstests;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.Menu;
@@ -8,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
 
 public class TapTestActivity extends Activity {
     int leftHandTaps = -1, rightHandTaps = -1, taps;
@@ -89,14 +91,31 @@ public class TapTestActivity extends Activity {
                 tap_test_button.setVisibility(View.GONE);
                 if (leftHandTaps == -1) {
                     leftHandTaps = taps;
+                    sendToSheets(leftHandTaps, Sheets.UpdateType.LH_TAP.ordinal());
+
                     setStartView(right_hand_test_label);
                 } else if (rightHandTaps == -1){
                     rightHandTaps = taps;
+                    sendToSheets(rightHandTaps, Sheets.UpdateType.RH_TAP.ordinal());
+
                     setResultView();
                 }
             }
         }.start();
         return taps;
+    }
+
+    private void sendToSheets(int scores, int sheet) {
+        // Send data to sheets
+        Intent sheets = new Intent(this, Sheets.class);
+//
+        float temp = 1011;
+
+        sheets.putExtra(Sheets.EXTRA_VALUE, temp);
+        sheets.putExtra(Sheets.EXTRA_USER, getString(R.string.patientID));
+        sheets.putExtra(Sheets.EXTRA_TYPE, sheet);
+
+        startActivity(sheets);
     }
 
     @Override

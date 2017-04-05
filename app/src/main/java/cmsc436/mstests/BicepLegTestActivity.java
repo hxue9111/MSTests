@@ -2,6 +2,7 @@ package cmsc436.mstests;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.support.v7.app.AppCompatActivity;
@@ -180,13 +181,27 @@ public class BicepLegTestActivity extends Activity {
     private void setResultsView(){
         start_button.setVisibility(View.GONE);
         done_button.setVisibility(View.GONE);
+        sendToSheets(la_avg, Sheets.UpdateType.LH_CURL.ordinal());
+        sendToSheets(ra_avg, Sheets.UpdateType.RH_CURL.ordinal());
+
         tv.setText("Average Time Per Curl Results\n\n" +
                 "Right Arm: " + ra_avg + " seconds" +
                 "\nLeft Arm: " + la_avg + " seconds" +
                 "\nRight Leg: " + rl_avg + " seconds" +
                 "\nLeft Leg: " + ll_avg + " seconds");
     }
+    private void sendToSheets(double scores, int sheet) {
+        // Send data to sheets
+        Intent sheets = new Intent(this, Sheets.class);
+//
+        float temp = 1011;
 
+        sheets.putExtra(Sheets.EXTRA_VALUE, temp);
+        sheets.putExtra(Sheets.EXTRA_USER, getString(R.string.patientID));
+        sheets.putExtra(Sheets.EXTRA_TYPE, sheet);
+
+        startActivity(sheets);
+    }
     private double average(ArrayList<Long> arr){
         double l = 0;
         if(arr.size() == 0){
