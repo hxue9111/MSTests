@@ -16,6 +16,7 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
+import android.os.Vibrator;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
@@ -33,6 +34,7 @@ public class BalanceTestActivity extends Activity implements SensorEventListener
 
     private SensorManager sensorMan;
     private Sensor mSensor;
+    private Vibrator v;
 
     private int score = 0;
     private double movementScaling = 50;
@@ -53,6 +55,7 @@ public class BalanceTestActivity extends Activity implements SensorEventListener
 
         sensorMan = (SensorManager) getSystemService(SENSOR_SERVICE);
         mSensor = sensorMan.getDefaultSensor(Sensor.TYPE_GRAVITY);
+        v = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
 
         prompt = (TextView)findViewById(R.id.prompt);
         start_btn = (Button)findViewById(R.id.start_balance_button);
@@ -84,6 +87,7 @@ public class BalanceTestActivity extends Activity implements SensorEventListener
         });
     }
     private void initializeTest() {
+        v.vibrate(5000);
         score = 0;
         Paint mPaint = new Paint();
         mPaint.setAntiAlias(true);
@@ -113,6 +117,7 @@ public class BalanceTestActivity extends Activity implements SensorEventListener
         yview.setVisibility(View.GONE);
     }
     private void scoreScreen() {
+        v.vibrate(5000);
         prompt.setText("Score(lower is better): " + score);
         dv.saveDrawing();
         dv.setVisibility(View.GONE);
