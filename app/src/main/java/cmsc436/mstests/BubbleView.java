@@ -75,7 +75,7 @@ public class BubbleView extends View{
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        if (counter == 1) {
+        if (counter == 0) {
             setDimension(getHeight(),getWidth());
         }
 
@@ -135,6 +135,8 @@ public class BubbleView extends View{
         counter =0;
         startTime = uptimeMillis();
         prevTime = startTime;
+        listener.onBubbleUpdate();
+        setVisibility(View.VISIBLE);
     }
 
     public int getCurrentCounter() { return counter;}
