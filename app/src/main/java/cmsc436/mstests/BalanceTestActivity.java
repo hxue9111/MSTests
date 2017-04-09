@@ -87,7 +87,7 @@ public class BalanceTestActivity extends Activity implements SensorEventListener
         });
     }
     private void initializeTest() {
-        v.vibrate(5000);
+        v.vibrate(1000);
         score = 0;
         Paint mPaint = new Paint();
         mPaint.setAntiAlias(true);
@@ -117,7 +117,7 @@ public class BalanceTestActivity extends Activity implements SensorEventListener
         yview.setVisibility(View.GONE);
     }
     private void scoreScreen() {
-        v.vibrate(5000);
+        v.vibrate(2000);
         prompt.setText("Score(lower is better): " + score);
         dv.saveDrawing();
         dv.setVisibility(View.GONE);
