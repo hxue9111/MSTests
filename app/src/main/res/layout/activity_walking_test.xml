@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:weightSum="1">
+
+
+    <TextView
+        android:id="@+id/tv_steps"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="35dp"
+        android:text="Directions: Walk 25 steps as quickly as possible. The test will time how fast on average each step was."
+        android:layout_weight=".25"
+        />
+
+    <Button
+        android:id="@+id/btn_start"
+        android:layout_width="349dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.5"
+        android:text="Push to start the test"
+        android:textSize="30dp" />
+
+
+</LinearLayout>

@@ -30,6 +30,7 @@ public class MainActivity extends Activity {
         Button bicep_leg_test_button = (Button)findViewById(R.id.bicep_leg_test_start);
         Button bubble_test_button = (Button)findViewById((R.id.start_bubble_button));
         Button balance_test_button = (Button)findViewById((R.id.start_balance_button));
+        Button walking_test_button = (Button)findViewById(R.id.walking_test_button);
 
         final Intent start_tap_test = new Intent(this, TapTestActivity.class);
         final Intent start_spiral_test = new Intent(this, SpiralTestActivity.class);
@@ -37,6 +38,7 @@ public class MainActivity extends Activity {
         final Intent start_bicep_leg_test = new Intent(this, BicepLegTestActivity.class);
         final Intent start_bubble_test = new Intent(this, BubbleActivity.class);
         final Intent start_balance_test = new Intent(this, BalanceTestActivity.class);
+        final Intent start_walking_test = new Intent(this, WalkingTestActivity.class);
 
         tap_test_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,6 +79,13 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View view) {
                 startActivity(start_balance_test);
+            }
+        });
+
+        walking_test_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(start_walking_test);
             }
         });
     }
