@@ -83,7 +83,8 @@ public class PathTimeTestActivity extends Activity
     private void startScreen(){
         if (ContextCompat.checkSelfPermission(PathTimeTestActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
-            prompt.setVisibility(View.INVISIBLE);
+            prompt.setVisibility(View.VISIBLE);
+            prompt.setText("Directions: Start tracking by pressing the start button. When you have finished walking, press the button again to finish test.");
             start_stop.setText("Start test");
             start_stop.setVisibility(View.VISIBLE);
             start_stop.setOnClickListener(new View.OnClickListener() {
