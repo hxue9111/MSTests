@@ -75,4 +75,13 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="12dp" />
 
+    <Button
+        android:text="Path Time Test"
+        android:textSize="30dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/start_path_time_test_button"
+        android:layout_below="@+id/walking_test_button"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="12dp" />
 </RelativeLayout>
