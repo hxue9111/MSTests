@@ -32,6 +32,7 @@ public class MainActivity extends Activity {
         Button balance_test_button = (Button)findViewById((R.id.start_balance_button));
         Button walking_test_button = (Button)findViewById(R.id.walking_test_button);
         Button path_time_test_button = (Button) findViewById(R.id.start_path_time_test_button);
+        Button symbol_test_button = (Button) findViewById(R.id.symbol_test_button);
 
         final Intent start_tap_test = new Intent(this, TapTestActivity.class);
         final Intent start_spiral_test = new Intent(this, SpiralTestActivity.class);
@@ -41,6 +42,7 @@ public class MainActivity extends Activity {
         final Intent start_balance_test = new Intent(this, BalanceTestActivity.class);
         final Intent start_walking_test = new Intent(this, WalkingTestActivity.class);
         final Intent start_path_time_test = new Intent(this, PathTimeTestActivity.class);
+        final Intent symbol_test = new Intent(this, SymbolTestActivity.class);
 
         tap_test_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -95,6 +97,13 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View view) {
                 startActivity(start_path_time_test);
+            }
+        });
+
+        symbol_test_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(symbol_test);
             }
         });
     }
