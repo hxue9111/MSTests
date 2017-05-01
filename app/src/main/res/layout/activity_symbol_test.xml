@@ -47,15 +47,6 @@
         android:layout_alignTop="@+id/symbol_prompt"
         android:layout_centerHorizontal="true" />
 
-    <NumberPicker
-        android:visibility="invisible"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/numberPicker"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
-
-
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -67,6 +58,14 @@
         android:layout_marginBottom="24dp"
         android:visibility="visible" />
 
+    <Button
+        android:text="Speech Recognition"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/speech"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true" />
+
     <EditText
         android:inputType="number"
         android:textSize="20dp"
@@ -74,15 +73,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/speech"
-        android:layout_toStartOf="@+id/numberPicker" />
-
-    <Button
-        android:text="Speech Recognition"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/speech"
-        android:layout_alignBottom="@+id/result"
-        android:layout_alignStart="@+id/numberPicker"
-        android:layout_marginStart="32dp" />
+        android:layout_toStartOf="@+id/speech" />
 
 </RelativeLayout>
