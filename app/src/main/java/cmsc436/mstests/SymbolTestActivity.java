@@ -27,10 +27,9 @@ import java.util.Random;
 
 public class SymbolTestActivity extends Activity {
     double start_time,end_time;
-    Button start_button, done_button ;
+    Button start_button ;
     Button speech_recog;
     TextView prompt, result;
-    NumberPicker np;
     ImageView symbol ;
     ImageView symbol_list;
     EditText input;
@@ -83,7 +82,6 @@ public class SymbolTestActivity extends Activity {
         }
         else {
             imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
-            np.setVisibility(View.INVISIBLE);
             input.setVisibility(View.INVISIBLE);
             speech_recog.setVisibility(View.INVISIBLE);
             resultView();
