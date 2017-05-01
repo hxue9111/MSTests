@@ -11,13 +11,6 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="cmsc436.mstests.SymbolTestActivity">
 
-    <NumberPicker
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/numberPicker"
-        android:layout_above="@+id/symbol_test_start"
-        android:layout_centerHorizontal="true" />
-
     <ImageView
         android:adjustViewBounds="true"
         android:layout_height="wrap_content"
@@ -37,24 +30,6 @@
         android:layout_below="@+id/symbol_list"
         android:layout_alignStart="@+id/symbol_list" />
 
-    <Button
-        android:text="done!"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/done_button"
-        android:layout_above="@+id/symbol_test_start"
-        android:layout_centerHorizontal="true" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/symbol_test_start"
-        android:text="click here to start"
-        android:textSize="30dp"
-        android:layout_marginBottom="64dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
-
     <TextView
         android:lines="10"
         android:layout_width="wrap_content"
@@ -71,5 +46,43 @@
         android:adjustViewBounds="false"
         android:layout_alignTop="@+id/symbol_prompt"
         android:layout_centerHorizontal="true" />
+
+    <NumberPicker
+        android:visibility="invisible"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/numberPicker"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/symbol_test_start"
+        android:text="click here to start"
+        android:textSize="30dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="24dp"
+        android:visibility="visible" />
+
+    <EditText
+        android:inputType="number"
+        android:textSize="20dp"
+        android:id="@+id/answer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/speech"
+        android:layout_toStartOf="@+id/numberPicker" />
+
+    <Button
+        android:text="Speech Recognition"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/speech"
+        android:layout_alignBottom="@+id/result"
+        android:layout_alignStart="@+id/numberPicker"
+        android:layout_marginStart="32dp" />
 
 </RelativeLayout>
