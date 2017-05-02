@@ -40,12 +40,12 @@ public class SymbolTestActivity extends Activity {
     EditText input;
     int n = 0;
     Random r;
-    ArrayList<Integer> numbers;
     int count = 0;
     double[] trials = new double[9];
     String[] trials_check = new String[9];
     List<Integer> imgList = Arrays.asList(R.drawable.num1, R.drawable.num2, R.drawable.num3, R.drawable.num4,R.drawable.num5, R.drawable.num6, R.drawable.num7, R.drawable.num8, R.drawable.num9 );
     List<ImageView> symbolorder;
+    ArrayList<Integer> numbers , shuffle;
 
     protected static final int RESULT_SPEECH = 100;
 
@@ -55,7 +55,17 @@ public class SymbolTestActivity extends Activity {
         setContentView(R.layout.activity_symbol_test);
 
         //generate random number 1-10
-        numbers = new ArrayList<Integer>();
+        numbers = new ArrayList<Integer>(9);
+        for(int i=1; i<10; i++){
+            numbers.add(i);
+        }
+
+        shuffle = new ArrayList<Integer>(9);
+        for(int i=1; i<10; i++){
+            shuffle.add(i);
+        }
+        Collections.shuffle(shuffle);
+
         img1 = (ImageView) findViewById(R.id.imageView1);
         img2 = (ImageView) findViewById(R.id.imageView2);
         img3 = (ImageView) findViewById(R.id.imageView3);
@@ -67,9 +77,11 @@ public class SymbolTestActivity extends Activity {
         img9 = (ImageView) findViewById(R.id.imageView9);
 
         symbolorder = Arrays.asList(img1,img2,img3,img4,img5,img6,img7,img8,img9);
+        Collections.shuffle(numbers);
 
-        Collections.shuffle(imgList);
-
+        for(int i=0; i<9; i++){
+            imgList.set(i, numToImglist(numbers.get(i)));
+        }
         for(int i=0; i<9; i++) {
             symbolorder.get(i).setImageResource(imgList.get(i));
         }
@@ -82,20 +94,16 @@ public class SymbolTestActivity extends Activity {
         start_button = (Button) findViewById(R.id.symbol_test_start);
         prompt = (TextView) findViewById(R.id.symbol_prompt);
         symbol = (ImageView) findViewById(R.id.symbol);
-        symbol.setVisibility(View.INVISIBLE);
         symbol_list = (ImageView) findViewById(R.id.symbol_list);
         symbol_list.setImageResource(R.drawable.symbol_list2);
         result = (TextView) findViewById(R.id.result);
         input = (EditText) findViewById(R.id.answer);
-
         prompt.setText("Please take a look at the chart above then enter the correct number that corresponds to the image appear below and press Done! after you select");
 
         start_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 prompt.setVisibility(View.INVISIBLE);
-                symbol.setVisibility(View.VISIBLE);
-
 
                 init();
             }
@@ -143,7 +151,8 @@ public class SymbolTestActivity extends Activity {
                 }
             }
         });
-        symbol.setImageResource(imgList.get(count));
+        symbol.setImageResource(imgList.get(shuffle.get(count)-1));
+//        getSymbol(shuffle.get(count));
         start_time = System.currentTimeMillis();
         input.setOnKeyListener(new TextView.OnKeyListener() {
 
@@ -224,23 +233,23 @@ public class SymbolTestActivity extends Activity {
 
     public void getSymbol(int n) {
         switch (n) {
-            case R.drawable.num1:
+            case 1:
                 symbol.setImageResource(R.drawable.num1);break;
-            case R.drawable.num2:
+            case 2:
                 symbol.setImageResource(R.drawable.num2);break;
-            case R.drawable.num3:
+            case 3:
                 symbol.setImageResource(R.drawable.num3);break;
-            case R.drawable.num4:
+            case 4:
                 symbol.setImageResource(R.drawable.num4);break;
-            case R.drawable.num5:
+            case 5:
                 symbol.setImageResource(R.drawable.num5);break;
-            case R.drawable.num6:
+            case 6:
                 symbol.setImageResource(R.drawable.num6);break;
-            case R.drawable.num7:
+            case 7:
                 symbol.setImageResource(R.drawable.num7);break;
-            case R.drawable.num8:
+            case 8:
                 symbol.setImageResource(R.drawable.num8);break;
-            case R.drawable.num9:
+            case 9:
                 symbol.setImageResource(R.drawable.num9);break;
             default:
                 return ;
@@ -254,7 +263,8 @@ public class SymbolTestActivity extends Activity {
             trials_check[count] = "Wrong";
         }
         else {
-            if (Integer.parseInt(input.getText().toString()) == imgList.get(count)) {
+            int n = Integer.parseInt(input.getText().toString());
+            if (n == shuffle.get(count)) {
                 trials_check[count] = "Correct";
             } else {
 
@@ -271,5 +281,29 @@ public class SymbolTestActivity extends Activity {
 
         return true;
     }
+    private Integer numToImglist(int n) {
+        switch (n) {
+            case 1:
+                return R.drawable.num1;
+            case 2:
+                return R.drawable.num2;
+            case 3:
+                return R.drawable.num3;
+            case 4:
+                return R.drawable.num4;
+            case 5:
+                return R.drawable.num5;
+            case 6:
+                return R.drawable.num6;
+            case 7:
+                return R.drawable.num7;
+            case 8:
+                return R.drawable.num8;
+            case 9:
+                return R.drawable.num9;
+            default:
+                return 0;
+        }
 
+    }
 }
