@@ -25,6 +25,8 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 
 public class SymbolTestActivity extends Activity {
@@ -34,6 +36,7 @@ public class SymbolTestActivity extends Activity {
     TextView prompt, result;
     ImageView symbol ;
     ImageView symbol_list;
+    ImageView img1,img2,img3,img4,img5,img6,img7,img8,img9;
     EditText input;
     int n = 0;
     Random r;
@@ -41,6 +44,8 @@ public class SymbolTestActivity extends Activity {
     int count = 0;
     double[] trials = new double[9];
     String[] trials_check = new String[9];
+    List<Integer> imgList = Arrays.asList(R.drawable.num1, R.drawable.num2, R.drawable.num3, R.drawable.num4,R.drawable.num5, R.drawable.num6, R.drawable.num7, R.drawable.num8, R.drawable.num9 );
+    List<ImageView> symbolorder;
 
     protected static final int RESULT_SPEECH = 100;
 
@@ -51,14 +56,34 @@ public class SymbolTestActivity extends Activity {
 
         //generate random number 1-10
         numbers = new ArrayList<Integer>();
-        for (int i = 1; i < 10; ++i) {numbers.add(i); }
-        Collections.shuffle(numbers);
+        img1 = (ImageView) findViewById(R.id.imageView1);
+        img2 = (ImageView) findViewById(R.id.imageView2);
+        img3 = (ImageView) findViewById(R.id.imageView3);
+        img4 = (ImageView) findViewById(R.id.imageView4);
+        img5 = (ImageView) findViewById(R.id.imageView5);
+        img6 = (ImageView) findViewById(R.id.imageView6);
+        img7 = (ImageView) findViewById(R.id.imageView7);
+        img8 = (ImageView) findViewById(R.id.imageView8);
+        img9 = (ImageView) findViewById(R.id.imageView9);
+
+        symbolorder = Arrays.asList(img1,img2,img3,img4,img5,img6,img7,img8,img9);
+
+        Collections.shuffle(imgList);
+
+        for(int i=0; i<9; i++) {
+            symbolorder.get(i).setImageResource(imgList.get(i));
+        }
+//
+//        for (int i: numbers) {numbers.add(i); }
+//        Collections.shuffle(numbers);
+//        shuffle(numbers);
+
         speech_recog = (Button) findViewById(R.id.speech);
         start_button = (Button) findViewById(R.id.symbol_test_start);
         prompt = (TextView) findViewById(R.id.symbol_prompt);
         symbol = (ImageView) findViewById(R.id.symbol);
         symbol_list = (ImageView) findViewById(R.id.symbol_list);
-        symbol_list.setImageResource(R.drawable.symbol_list);
+        symbol_list.setImageResource(R.drawable.symbol_list2);
         result = (TextView) findViewById(R.id.result);
         input = (EditText) findViewById(R.id.answer);
 
@@ -115,30 +140,29 @@ public class SymbolTestActivity extends Activity {
                 }
             }
         });
-
-        getSymbol(numbers.get(count));
+        symbol.setImageResource(imgList.get(count));
         start_time = System.currentTimeMillis();
-            input.setOnKeyListener(new TextView.OnKeyListener() {
+        input.setOnKeyListener(new TextView.OnKeyListener() {
 
-                @Override
-                public boolean onKey(View v, int keyCode, KeyEvent event) {
-                    if (event.getKeyCode() == KeyEvent.KEYCODE_NUMPAD_ENTER) {
-                        return checkAnswer();
-                    } else {
-                        return false;
-                    }
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (event.getKeyCode() == KeyEvent.KEYCODE_NUMPAD_ENTER) {
+                    return checkAnswer();
+                } else {
+                    return false;
                 }
-            });
-            input.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-                @Override
-                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                    if (actionId == EditorInfo.IME_ACTION_DONE) {
-                        return checkAnswer();
-                    } else {
-                        return false;
-                    }
+            }
+        });
+        input.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    return checkAnswer();
+                } else {
+                    return false;
                 }
-            });
+            }
+        });
 
     }
     @Override
@@ -197,26 +221,26 @@ public class SymbolTestActivity extends Activity {
 
     public void getSymbol(int n) {
         switch (n) {
-            case 1:
+            case R.drawable.num1:
                 symbol.setImageResource(R.drawable.num1);break;
-            case 2:
+            case R.drawable.num2:
                 symbol.setImageResource(R.drawable.num2);break;
-            case 3:
+            case R.drawable.num3:
                 symbol.setImageResource(R.drawable.num3);break;
-            case 4:
+            case R.drawable.num4:
                 symbol.setImageResource(R.drawable.num4);break;
-            case 5:
+            case R.drawable.num5:
                 symbol.setImageResource(R.drawable.num5);break;
-            case 6:
+            case R.drawable.num6:
                 symbol.setImageResource(R.drawable.num6);break;
-            case 7:
+            case R.drawable.num7:
                 symbol.setImageResource(R.drawable.num7);break;
-            case 8:
+            case R.drawable.num8:
                 symbol.setImageResource(R.drawable.num8);break;
-            case 9:
+            case R.drawable.num9:
                 symbol.setImageResource(R.drawable.num9);break;
-                default:
-                    return ;
+            default:
+                return ;
         }
     }
 
@@ -227,7 +251,7 @@ public class SymbolTestActivity extends Activity {
             trials_check[count] = "Wrong";
         }
         else {
-            if (Integer.parseInt(input.getText().toString()) == numbers.get(count)) {
+            if (Integer.parseInt(input.getText().toString()) == imgList.get(count)) {
                 trials_check[count] = "Correct";
             } else {
 
