@@ -7,10 +7,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.speech.RecognizerIntent;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewDebug;
 import android.view.WindowManager;
+import android.view.inputmethod.BaseInputConnection;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -116,34 +118,23 @@ public class SymbolTestActivity extends Activity {
 
         getSymbol(numbers.get(count));
         start_time = System.currentTimeMillis();
+            input.setOnKeyListener(new TextView.OnKeyListener() {
+
+                @Override
+                public boolean onKey(View v, int keyCode, KeyEvent event) {
+                    if (event.getKeyCode() == KeyEvent.KEYCODE_NUMPAD_ENTER) {
+                        return checkAnswer();
+                    } else {
+                        return false;
+                    }
+                }
+            });
             input.setOnEditorActionListener(new TextView.OnEditorActionListener() {
                 @Override
                 public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-
                     if (actionId == EditorInfo.IME_ACTION_DONE) {
-                        double final_time = 0;
-                        if( input.getText().toString().equals("")) {
-                            trials_check[count] = "Wrong";
-                        }
-                        else {
-                            if (Integer.parseInt(input.getText().toString()) == numbers.get(count)) {
-                                trials_check[count] = "Correct";
-                            } else {
-
-                                trials_check[count] = "Wrong";
-                            }
-                        }
-                        end_time = System.currentTimeMillis();
-                        final_time = (end_time - start_time) / 1000;
-                        trials[count] = final_time;
-
-                        count++;
-                        input.setText("");
-                        init();
-
-                        return true;
+                        return checkAnswer();
                     } else {
-
                         return false;
                     }
                 }
@@ -157,14 +148,46 @@ public class SymbolTestActivity extends Activity {
         switch (requestCode) {
             case RESULT_SPEECH: {
                 if (resultCode == RESULT_OK && null != data) {
-                    switch (data.getStringExtra(RecognizerIntent.EXTRA_RESULTS)) {
-                        case "one" :
-
-                    }
                     ArrayList<String> text = data
                             .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
 
-                    result.setText(text.get(0));
+
+                    //result.setText(text.get(0));
+                    String txt = text.get(0);
+                    Log.d("myTag", "Cool");
+                    switch (txt) {
+                        case "one" :
+                            input.setText("1");
+                            break;
+                        case "two":
+                            input.setText("2");
+                            break;
+                        case "three" :
+                            input.setText("3");
+                            break;
+                        case "4":
+                            input.setText("4");
+                            break;
+                        case "5" :
+                            input.setText("5");
+                            break;
+                        case "six":
+                            input.setText("6");
+                            break;
+                        case "7" :
+                            input.setText("7");
+                            break;
+                        case "8":
+                            input.setText("8");
+                            break;
+                        case "9" :
+                            input.setText("9");
+                            break;
+
+                    }
+                    input.dispatchKeyEvent(new KeyEvent(0, 0, KeyEvent.ACTION_DOWN,
+                            KeyEvent.KEYCODE_NUMPAD_ENTER, 0));
+
                 }
                 break;
             }
@@ -195,6 +218,31 @@ public class SymbolTestActivity extends Activity {
                 default:
                     return ;
         }
+    }
+
+    public boolean checkAnswer() {
+
+        double final_time = 0;
+        if( input.getText().toString().equals("")) {
+            trials_check[count] = "Wrong";
+        }
+        else {
+            if (Integer.parseInt(input.getText().toString()) == numbers.get(count)) {
+                trials_check[count] = "Correct";
+            } else {
+
+                trials_check[count] = "Wrong";
+            }
+        }
+        end_time = System.currentTimeMillis();
+        final_time = (end_time - start_time) / 1000;
+        trials[count] = final_time;
+
+        count++;
+        input.setText("");
+        init();
+
+        return true;
     }
 
 }
