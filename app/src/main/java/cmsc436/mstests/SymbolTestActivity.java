@@ -82,6 +82,7 @@ public class SymbolTestActivity extends Activity {
         start_button = (Button) findViewById(R.id.symbol_test_start);
         prompt = (TextView) findViewById(R.id.symbol_prompt);
         symbol = (ImageView) findViewById(R.id.symbol);
+        symbol.setVisibility(View.INVISIBLE);
         symbol_list = (ImageView) findViewById(R.id.symbol_list);
         symbol_list.setImageResource(R.drawable.symbol_list2);
         result = (TextView) findViewById(R.id.result);
@@ -93,6 +94,8 @@ public class SymbolTestActivity extends Activity {
             @Override
             public void onClick(View v) {
                 prompt.setVisibility(View.INVISIBLE);
+                symbol.setVisibility(View.VISIBLE);
+
 
                 init();
             }
