@@ -11,15 +11,6 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="cmsc436.mstests.SymbolTestActivity">
 
-    <ImageView
-        android:adjustViewBounds="true"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/symbol_list"
-        android:layout_marginTop="13dp"
-        android:id="@+id/symbol_list"
-        android:layout_alignStart="@+id/symbol_test_start"
-        android:layout_width="match_parent" />
-
     <TextView
         android:textSize="20dp"
         android:layout_width="match_parent"
@@ -74,5 +65,87 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/speech"
         android:layout_toStartOf="@+id/speech" />
+
+    <ImageView
+        android:adjustViewBounds="true"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/symbol_list2"
+        android:id="@+id/symbol_list"
+        android:layout_width="400dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="13dp" />
+
+    <ImageView
+        app:srcCompat="@drawable/num1"
+        android:id="@+id/imageView1"
+        android:layout_alignTop="@+id/symbol_list"
+        android:layout_alignParentStart="true"
+        android:layout_height="25dp"
+        android:layout_width="36dp" />
+
+    <ImageView
+        android:layout_width="36dp"
+        app:srcCompat="@drawable/num2"
+        android:id="@+id/imageView2"
+        android:layout_alignTop="@+id/symbol_list"
+        android:layout_toEndOf="@+id/imageView1"
+        android:layout_height="25dp" />
+
+    <ImageView
+        android:layout_width="36dp"
+        app:srcCompat="@drawable/num3"
+        android:id="@+id/imageView3"
+        android:layout_alignTop="@+id/symbol_list"
+        android:layout_toEndOf="@+id/imageView2"
+        android:layout_height="25dp" />
+
+    <ImageView
+        app:srcCompat="@drawable/num4"
+        android:id="@+id/imageView4"
+        android:layout_width="36dp"
+        android:layout_alignTop="@+id/symbol_list"
+        android:layout_toEndOf="@+id/imageView3"
+        android:layout_height="25dp" />
+
+    <ImageView
+        android:layout_width="36dp"
+        app:srcCompat="@drawable/num5"
+        android:id="@+id/imageView5"
+        android:layout_alignTop="@+id/symbol_list"
+        android:layout_centerHorizontal="true"
+        android:layout_height="25dp" />
+
+    <ImageView
+        android:layout_width="36dp"
+        app:srcCompat="@drawable/num6"
+        android:id="@+id/imageView6"
+        android:layout_alignTop="@+id/symbol_list"
+        android:layout_toEndOf="@+id/imageView5"
+        android:layout_height="25dp" />
+
+    <ImageView
+        android:layout_width="36dp"
+        app:srcCompat="@drawable/num7"
+        android:id="@+id/imageView7"
+        android:layout_alignTop="@+id/symbol_list"
+        android:layout_toEndOf="@+id/imageView6"
+        android:layout_height="25dp" />
+
+    <ImageView
+        android:layout_width="36dp"
+        app:srcCompat="@drawable/num8"
+        android:id="@+id/imageView8"
+        android:layout_alignTop="@+id/symbol_list"
+        android:layout_toEndOf="@+id/imageView7"
+        android:layout_height="25dp" />
+
+    <ImageView
+        android:layout_width="36dp"
+        app:srcCompat="@drawable/num9"
+        android:id="@+id/imageView9"
+        android:layout_alignTop="@+id/symbol_list"
+        android:layout_alignParentEnd="true"
+        android:layout_height="25dp" />
 
 </RelativeLayout>
