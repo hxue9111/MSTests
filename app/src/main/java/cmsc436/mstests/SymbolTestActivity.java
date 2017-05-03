@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.speech.RecognizerIntent;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -22,6 +23,7 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,15 +40,16 @@ public class SymbolTestActivity extends Activity {
     ImageView symbol_list;
     ImageView img1,img2,img3,img4,img5,img6,img7,img8,img9;
     EditText input;
-    int n = 0;
-    Random r;
-    int count = 0;
-    double[] trials = new double[9];
-    String[] trials_check = new String[9];
+    int currSymbol = 0, numSymbolCorrect = 0;
+    ArrayList<Double> correctAnswerTimes = new ArrayList<>();
+    ArrayList<Double> trials = new ArrayList<>();
+    ArrayList<String> trials_check = new ArrayList<>();
     List<Integer> imgList = Arrays.asList(R.drawable.num1, R.drawable.num2, R.drawable.num3, R.drawable.num4,R.drawable.num5, R.drawable.num6, R.drawable.num7, R.drawable.num8, R.drawable.num9 );
     List<ImageView> symbolorder;
-    ArrayList<Integer> numbers , shuffle;
-
+    ArrayList<Integer> numbers;
+    HashMap<Integer,ArrayList<Double>> symbolTimes;
+    TextView trialresults ;
+    double totalAverage = 0;
     protected static final int RESULT_SPEECH = 100;
 
     @Override
@@ -55,16 +58,10 @@ public class SymbolTestActivity extends Activity {
         setContentView(R.layout.activity_symbol_test);
 
         //generate random number 1-10
-        numbers = new ArrayList<Integer>(9);
+        numbers = new ArrayList<Integer>();
         for(int i=1; i<10; i++){
             numbers.add(i);
         }
-
-        shuffle = new ArrayList<Integer>(9);
-        for(int i=1; i<10; i++){
-            shuffle.add(i);
-        }
-        Collections.shuffle(shuffle);
 
         img1 = (ImageView) findViewById(R.id.imageView1);
         img2 = (ImageView) findViewById(R.id.imageView2);
@@ -85,10 +82,11 @@ public class SymbolTestActivity extends Activity {
         for(int i=0; i<9; i++) {
             symbolorder.get(i).setImageResource(imgList.get(i));
         }
-//
-//        for (int i: numbers) {numbers.add(i); }
-//        Collections.shuffle(numbers);
-//        shuffle(numbers);
+
+        symbolTimes = new HashMap<>();
+        for(int i=1; i<10; i++) {
+            symbolTimes.put(i, new ArrayList<Double>());
+        }
 
         speech_recog = (Button) findViewById(R.id.speech);
         start_button = (Button) findViewById(R.id.symbol_test_start);
@@ -97,62 +95,110 @@ public class SymbolTestActivity extends Activity {
         symbol_list = (ImageView) findViewById(R.id.symbol_list);
         symbol_list.setImageResource(R.drawable.symbol_list2);
         result = (TextView) findViewById(R.id.result);
+        result.setVisibility(View.INVISIBLE);
         input = (EditText) findViewById(R.id.answer);
         prompt.setText("Please take a look at the chart above then enter the correct number that corresponds to the image appear below and press Done! after you select");
+        trialresults = (TextView) findViewById(R.id.temp2);
 
         start_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                prompt.setVisibility(View.INVISIBLE);
+//                prompt.setVisibility(View.INVISIBLE);
+                new CountDownTimer(90000,1000) {
+                    @Override
+                    public void onTick(long millisUntilFinished) {
+                        prompt.setText("Seconds remaining: " + millisUntilFinished / 1000);
+                    }
 
+                    @Override
+                    public void onFinish() {
+                        prompt.setVisibility(View.INVISIBLE);
+                        resultView();
+                    }
+                }.start();
                 init();
             }
         });
 
     }
     public void init() {
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,1);
 
         start_button.setVisibility(View.INVISIBLE);
-        if(count < 9) {
-            doTest();
-        }
-        else {
-            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
-            input.setVisibility(View.INVISIBLE);
-            speech_recog.setVisibility(View.INVISIBLE);
-            resultView();
-        }
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,1);
+        doTest();
     }
     public void resultView() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
+        input.setVisibility(View.INVISIBLE);
+        speech_recog.setVisibility(View.INVISIBLE);
+        result.setVisibility(View.VISIBLE);
+        result.setMovementMethod(new ScrollingMovementMethod());
+        calcAverage();
         String str = "";
+        String str2 = calcAverage();
+        trialresults.setText(str2);
         symbol.setVisibility(View.INVISIBLE);
-        for(int i=0; i<9; i++) {
-            str = str + "Trial "+ (i+1) + " : " + trials[i] + " / " + trials_check[i] + " \n";
+//        for(int i=1; i<=symbolTimes.keySet().size(); i++) {
+//            str += "symbol "+ i + " -> " + symbolTimes.get(i).toString() + "\n";
+//        }
+        for(int i=0; i<trials.size(); i++) {
+
+            str = str + "Trial "+ (i+1) + " : " + trials.get(i) + " / " + trials_check.get(i) + " \n";
         }
         result.setText(str.replace("\\n",System.lineSeparator()));
     }
+    private String calcAverage() {
+        double firstHalfAvg = 0, secondHalfAvg =0;
+        int fasterAnswer = 0;
+        for(ArrayList<Double> list: symbolTimes.values()) {
+            for(double d : list) {
+                totalAverage += d ;
+            }
+
+            if(list.size() > 1 ) {
+                for (int i = 0; i < list.size() / 2; i++) {
+                    firstHalfAvg += list.get(i);
+                }
+                firstHalfAvg /= list.size() / 2;
+                for (int j = list.size(); j < list.size(); j++) {
+                    secondHalfAvg += list.get(j);
+                }
+                secondHalfAvg /= (list.size() - list.size() / 2);
+
+                if (secondHalfAvg < firstHalfAvg) {
+                    fasterAnswer++;
+                }
+            }
+        }
+        totalAverage /= numSymbolCorrect;
+        totalAverage = (double)Math.round(totalAverage * 100000d) / 100000d;
+
+        String resultprompt = "Number of correct answer : " + numSymbolCorrect +".\n"+ "Average Time: " + totalAverage + "s\n" + "Learn Ability (Scale 0-9): ";
+        return resultprompt + fasterAnswer;
+    }
     public void doTest() {
 
-        speech_recog.setOnClickListener(new View.OnClickListener(){
+        speech_recog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
                 intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, "en-US");
 
-                try{
+                try {
                     startActivityForResult(intent, RESULT_SPEECH);
-                }catch (ActivityNotFoundException e) {
+                } catch (ActivityNotFoundException e) {
                     Toast.makeText(getApplicationContext(),
                             "SPEECH NOT SUPPORTED",
                             Toast.LENGTH_SHORT).show();
                 }
             }
         });
-        symbol.setImageResource(imgList.get(shuffle.get(count)-1));
-//        getSymbol(shuffle.get(count));
+        changeSymbol();
+
+        symbol.setImageResource(imgList.get(currSymbol));
         start_time = System.currentTimeMillis();
         input.setOnKeyListener(new TextView.OnKeyListener() {
 
@@ -176,6 +222,45 @@ public class SymbolTestActivity extends Activity {
             }
         });
 
+    }
+
+    private void changeSymbol() {
+        Random r = new Random();
+        int rand;
+        do {    // Make sure we don't get the last one again
+            rand = r.nextInt(9);
+        }while(rand == currSymbol);
+        currSymbol = rand;
+    }
+    public boolean checkAnswer() {
+
+        double final_time = 0;
+        end_time = System.currentTimeMillis();
+        final_time = (end_time - start_time) / 1000;
+
+        if( input.getText().toString().equals("")) {
+            trials.add(final_time);
+            trials_check.add("WRONG");
+        }
+        else {
+            int n = Integer.parseInt(input.getText().toString());
+            if (n == currSymbol+1) {
+                correctAnswerTimes.add(final_time);
+                trials.add(final_time);
+                trials_check.add("CORRECT");
+                numSymbolCorrect++;
+                symbolTimes.get(n).add(final_time);
+            }
+            else {
+                trials.add(final_time);
+                trials_check.add("WRONG");
+
+            }
+        }
+        input.setText("");
+        init();
+
+        return true;
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -230,7 +315,6 @@ public class SymbolTestActivity extends Activity {
 
         }
     }
-
     public void getSymbol(int n) {
         switch (n) {
             case 1:
@@ -256,31 +340,6 @@ public class SymbolTestActivity extends Activity {
         }
     }
 
-    public boolean checkAnswer() {
-
-        double final_time = 0;
-        if( input.getText().toString().equals("")) {
-            trials_check[count] = "Wrong";
-        }
-        else {
-            int n = Integer.parseInt(input.getText().toString());
-            if (n == shuffle.get(count)) {
-                trials_check[count] = "Correct";
-            } else {
-
-                trials_check[count] = "Wrong";
-            }
-        }
-        end_time = System.currentTimeMillis();
-        final_time = (end_time - start_time) / 1000;
-        trials[count] = final_time;
-
-        count++;
-        input.setText("");
-        init();
-
-        return true;
-    }
     private Integer numToImglist(int n) {
         switch (n) {
             case 1:
