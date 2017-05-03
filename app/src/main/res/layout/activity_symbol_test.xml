@@ -21,16 +21,8 @@
         android:layout_below="@+id/symbol_list"
         android:layout_alignStart="@+id/symbol_list" />
 
-    <TextView
-        android:lines="10"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/symbol_prompt"
-        android:layout_alignStart="@+id/symbol_prompt"
-        android:id="@+id/result" />
-
     <ImageView
-        android:src="@drawable/num1"
+        app:srcCompat="@drawable/num1"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:id="@+id/symbol"
@@ -69,7 +61,7 @@
     <ImageView
         android:adjustViewBounds="true"
         android:layout_height="wrap_content"
-        android:src="@mipmap/symbol_list2"
+        app:srcCompat="@drawable/symbol_list2"
         android:id="@+id/symbol_list"
         android:layout_width="400dp"
         android:layout_alignParentTop="true"
@@ -77,7 +69,7 @@
         android:layout_marginTop="13dp" />
 
     <ImageView
-        android:src="@drawable/num1"
+        app:srcCompat="@drawable/num1"
         android:id="@+id/imageView1"
         android:layout_alignTop="@+id/symbol_list"
         android:layout_alignParentStart="true"
@@ -86,7 +78,7 @@
 
     <ImageView
         android:layout_width="36dp"
-        android:src="@drawable/num2"
+        app:srcCompat="@drawable/num2"
         android:id="@+id/imageView2"
         android:layout_alignTop="@+id/symbol_list"
         android:layout_toEndOf="@+id/imageView1"
@@ -94,14 +86,14 @@
 
     <ImageView
         android:layout_width="36dp"
-        android:src="@drawable/num3"
+        app:srcCompat="@drawable/num3"
         android:id="@+id/imageView3"
         android:layout_alignTop="@+id/symbol_list"
         android:layout_toEndOf="@+id/imageView2"
         android:layout_height="25dp" />
 
     <ImageView
-        android:src="@drawable/num4"
+        app:srcCompat="@drawable/num4"
         android:id="@+id/imageView4"
         android:layout_width="36dp"
         android:layout_alignTop="@+id/symbol_list"
@@ -110,7 +102,7 @@
 
     <ImageView
         android:layout_width="36dp"
-        android:src="@drawable/num5"
+        app:srcCompat="@drawable/num5"
         android:id="@+id/imageView5"
         android:layout_alignTop="@+id/symbol_list"
         android:layout_centerHorizontal="true"
@@ -118,7 +110,7 @@
 
     <ImageView
         android:layout_width="36dp"
-        android:src="@drawable/num6"
+        app:srcCompat="@drawable/num6"
         android:id="@+id/imageView6"
         android:layout_alignTop="@+id/symbol_list"
         android:layout_toEndOf="@+id/imageView5"
@@ -126,7 +118,7 @@
 
     <ImageView
         android:layout_width="36dp"
-        android:src="@drawable/num7"
+        app:srcCompat="@drawable/num7"
         android:id="@+id/imageView7"
         android:layout_alignTop="@+id/symbol_list"
         android:layout_toEndOf="@+id/imageView6"
@@ -134,7 +126,7 @@
 
     <ImageView
         android:layout_width="36dp"
-        android:src="@drawable/num8"
+        app:srcCompat="@drawable/num8"
         android:id="@+id/imageView8"
         android:layout_alignTop="@+id/symbol_list"
         android:layout_toEndOf="@+id/imageView7"
@@ -142,10 +134,32 @@
 
     <ImageView
         android:layout_width="36dp"
-        android:src="@drawable/num9"
+        app:srcCompat="@drawable/num9"
         android:id="@+id/imageView9"
         android:layout_alignTop="@+id/symbol_list"
         android:layout_alignParentEnd="true"
         android:layout_height="25dp" />
+
+    <TextView
+        android:maxLines="5"
+        android:id="@+id/temp2"
+        android:textSize="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/symbol_prompt"
+        android:layout_alignBottom="@+id/symbol_prompt"
+        android:layout_alignParentStart="true"
+        />
+
+    <TextView
+        android:maxLines = "100"
+        android:scrollbars = "vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:id="@+id/result"
+        android:layout_below="@+id/symbol"
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@+id/speech"
+        android:layout_alignParentEnd="true" />
 
 </RelativeLayout>
