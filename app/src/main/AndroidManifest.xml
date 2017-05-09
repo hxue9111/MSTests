@@ -45,7 +45,8 @@
 
         <service android:name=".LocationService" />
 
-        <activity android:name=".SymbolTestActivity"></activity>
+        <activity android:name=".SymbolTestActivity" />
+        <activity android:name=".VibrationTestActivity"></activity>
     </application>
 
 </manifest>

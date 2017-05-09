@@ -98,4 +98,14 @@
         android:layout_below="@+id/start_path_time_test_button"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="12dp" />
+
+    <Button
+        android:text="Vibration test"
+        android:textSize="30dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/vibration_test_button"
+        android:layout_below="@+id/symbol_test_button"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="12dp" />
 </RelativeLayout></ScrollView>

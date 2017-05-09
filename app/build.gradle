@@ -5,7 +5,7 @@ android {
         config {
             keyAlias 'MSTest'
             keyPassword 'cmsc436'
-            storeFile file('C:/Users/Administrator/keystores/android.jks')
+//            storeFile file('C:/Users/Administrator/keystores/android.jks')
             storePassword 'android'
         }
     }
