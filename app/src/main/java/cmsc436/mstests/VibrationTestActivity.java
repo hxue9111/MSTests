@@ -2,6 +2,8 @@ package cmsc436.mstests;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.View;
@@ -15,7 +17,10 @@ import java.util.Random;
 
 import java.util.ArrayList;
 
+import static android.os.SystemClock.uptimeMillis;
+
 public class VibrationTestActivity extends Activity {
+    private static final int NUM_OF_TRIAL = 10;
     String start_txt= "Prest start to begin the vibration test";
     TextView textView;
     Button yes_btn, no_btn;
@@ -23,7 +28,9 @@ public class VibrationTestActivity extends Activity {
     Hashtable<long[],String> check = new Hashtable<>();
     int rand, rand2;
     long[] pattern;
-    int yes =0, no =0;
+    int yes =0, no =0, counter = 0;
+    long startTime, totalTime, prevTime ;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,8 +45,7 @@ public class VibrationTestActivity extends Activity {
 
     // Make the text take up the whole screen
     private void setStartView() {
-        textView.setText("Tab start to begin vibration test. If you can feel the vibration, " +
-                "please tap yes / blue color button");
+        textView.setText("Tab start to begin vibration test.");
         yes_btn.setVisibility(View.VISIBLE);
         no_btn.setVisibility(View.INVISIBLE);
         yes_btn.setText("CLICK TO START TEST");
@@ -47,58 +53,74 @@ public class VibrationTestActivity extends Activity {
             @Override
             public void onClick(View v) {
 
-            new CountDownTimer(90000,1000) {
+            new CountDownTimer(4000,1000) {
                 @Override
                 public void onTick(long millisUntilFinished) {
-                    textView.setText("Seconds remaining: " + millisUntilFinished / 1000);
-                    setClickView();
+                    textView.setText("Test starting in: " + millisUntilFinished / 1000);
+                    yes_btn.setVisibility(View.INVISIBLE);
                 }
 
                 @Override
                 public void onFinish() {
-                    //textView.setVisibility(View.INVISIBLE);
-                    textView.setText("Vibration: " + yes + "\n" + "No vibration: " + no);
+                    startGame();
                 }
             }.start();
 
-        }
+            }
     });
+    }
+
+    private void startGame() {
+        counter =0;
+        startTime = uptimeMillis();
+        prevTime = startTime;
+        textView.setText("If you can feel the vibration, please tap yes / blue color button after each trial");
+        no_btn.setVisibility(View.VISIBLE);
+        yes_btn.setVisibility(View.VISIBLE);
+        yes_btn.setBackgroundColor(Color.BLUE);
+        no_btn.setBackgroundColor(Color.RED);
+        yes_btn.setText("YES");
+        no_btn.setText("NO");
+        capture();
 
     }
 
-    private void setClickView() {
-        no_btn.setVisibility(View.VISIBLE);
-        yes_btn.setText("YES");
-        no_btn.setText("NO");
-
-        for(int i =0; i <=10; i++) {
+    private void capture() {
+        if(counter < NUM_OF_TRIAL) {
             changeVibrator();
             yes_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    check.put(pattern,"yes");
                     yes++;
+                    counter++;
+                    capture();
                 }
             });
             no_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    check.put(pattern,"no");
                     no++;
+                    counter++;
+                    capture();
                 }
             });
-        }
-        setResultView();
 
+        }
+        else
+            setResultView();
     }
 
     private void setResultView() {
         String str ="";
-        str = "Vibration: " + yes + "\n" + "No vibration: " + no;
+        yes_btn.setVisibility(View.INVISIBLE);
+        no_btn.setVisibility(View.INVISIBLE);
+        str = "Result: " + yes +"/10";
+        sendToSheets(yes, Sheets.UpdateType.VIBRATION.ordinal());
         textView.setText(str);
     }
 
     private void changeVibrator() {
+        textView.setText("Trial: " +counter);
         Random r = new Random();
         rand = r.nextInt(1000);
         rand2 = r.nextInt(1000);
@@ -106,4 +128,16 @@ public class VibrationTestActivity extends Activity {
         v.vibrate(pattern, -1);
     }
 
+    private void sendToSheets(int scores, int sheet) {
+        // Send data to sheets
+        Intent sheets = new Intent(this, Sheets.class);
+//
+        float temp = 1011;
+
+        sheets.putExtra(Sheets.EXTRA_VALUE, temp);
+        sheets.putExtra(Sheets.EXTRA_USER, getString(R.string.patientID));
+        sheets.putExtra(Sheets.EXTRA_TYPE, sheet);
+
+        startActivity(sheets);
+    }
 }
