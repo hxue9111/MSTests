@@ -10,6 +10,8 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -19,11 +21,14 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.Date;
 
-public class SpiralTestActivity extends Activity {
+import edu.umd.cmsc436.sheets.Sheets;
 
+public class SpiralTestActivity extends Activity implements Sheets.Host{
+    private Sheets sheet;
+    Date date;
     Button spiral_test_button;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,8 +71,8 @@ public class SpiralTestActivity extends Activity {
             @Override
             public void onClick(View v) {
                 canvas.saveDrawing();
-                sendToSheets(0, Sheets.UpdateType.LH_SPIRAL.ordinal());
-                sendToSheets(0, Sheets.UpdateType.RH_SPIRAL.ordinal());
+                sendToSheets(canvas, Sheets.TestType.LH_SPIRAL);
+                sendToSheets(canvas, Sheets.TestType.RH_SPIRAL);
                 finish();
             }
         });
@@ -75,17 +80,19 @@ public class SpiralTestActivity extends Activity {
 
     }
 
-    private void sendToSheets(int scores, int sheet) {
+    private void sendToSheets(DrawingView v, edu.umd.cmsc436.sheets.Sheets.TestType type) {
         // Send data to sheets
-        Intent sheets = new Intent(this, Sheets.class);
-//
-        float temp = 1011;
+        sheet = new edu.umd.cmsc436.sheets.Sheets(this, this, getString(R.string.app_name), getString(R.string.class_sheet), getString(R.string.private_sheet));
 
-        sheets.putExtra(Sheets.EXTRA_VALUE, temp);
-        sheets.putExtra(Sheets.EXTRA_USER, getString(R.string.patientID));
-        sheets.putExtra(Sheets.EXTRA_TYPE, sheet);
 
-        startActivity(sheets);
+//        float[] result = {(float) scores};
+        date = new Date();
+
+//        sheet.writeData(type, getString(R.string.patientID), result);
+//        sheet.writeTrials(type, getString(R.string.patientID), result) ;
+
+        String pathFilename = date.toString() + ": Path, " + type.toString();
+        sheet.uploadToDrive(getString(R.string.img_folder), pathFilename, v.getDrawingCache());
     }
 
     public class DrawingView extends View {
@@ -210,5 +217,40 @@ public class SpiralTestActivity extends Activity {
             }
             return true;
         }
+    }
+
+    @Override
+    public int getRequestCode(edu.umd.cmsc436.sheets.Sheets.Action action) {
+        switch (action) {
+            case REQUEST_ACCOUNT_NAME:
+                return 1001;
+            case REQUEST_AUTHORIZATION:
+                return 1002;
+            case REQUEST_PERMISSIONS:
+                return 1003;
+            case REQUEST_PLAY_SERVICES:
+                return 1004;
+            default:
+                return -1;
+        }
+    }
+
+    @Override
+    public void notifyFinished(Exception e) {
+        if (e != null) {
+            throw new RuntimeException(e);
+        }
+        Log.i(getClass().getSimpleName(), "Done");
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        this.sheet.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        this.sheet.onActivityResult(requestCode, resultCode, data);
     }
 }

@@ -4,15 +4,24 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.Arrays;
 
-public class TapTestActivity extends Activity {
-    int leftHandTaps = -1, rightHandTaps = -1, taps;
+import edu.umd.cmsc436.sheets.Sheets;
+
+public class TapTestActivity extends Activity implements Sheets.Host {
+    int leftHandTaps = -1, rightHandTaps = -1;
+    int taps;
+    int count = 0;
+    int[] lefthand = new int[5];
+    int[] righthand = new int[5];
 
     String left_hand_test_label = "Press the button to start left hand test";
     String right_hand_test_label = "Press the button to start right hand test";
@@ -21,28 +30,35 @@ public class TapTestActivity extends Activity {
     Button tap_test_button;
     TextView text_prompt;
 
+    private Sheets sheet;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tap_test);
 
-        tap_test_button = (Button)findViewById(R.id.tap_location);
-        text_prompt = (TextView)findViewById(R.id.prompt);
+        tap_test_button = (Button) findViewById(R.id.tap_location);
+        text_prompt = (TextView) findViewById(R.id.prompt);
 
         setStartView(left_hand_test_label);
     }
 
     // Make the text take up the whole screen
     private void setStartView(String hand_test_name) {
-        text_prompt.setText(hand_test_name);
-        tap_test_button.setVisibility(View.VISIBLE);
-        tap_test_button.setText(start_label);
-        tap_test_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setCountdownView();
-            }
-        });
+        if (count < 5) {
+
+            text_prompt.setText(hand_test_name);
+            tap_test_button.setVisibility(View.VISIBLE);
+            tap_test_button.setText(start_label);
+            tap_test_button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    setCountdownView();
+                }
+            });
+        } else {
+            setResultView();
+        }
     }
 
     //Start countdown
@@ -65,11 +81,15 @@ public class TapTestActivity extends Activity {
         tap_test_button.setVisibility(View.VISIBLE);
         captureTaps();
     }
+
     //Show results
     private void setResultView() {
         tap_test_button.setVisibility(View.INVISIBLE);
-        text_prompt.setText("Results:\nTaps with left hand: " + leftHandTaps + "\nTaps with right hand: " + rightHandTaps);
+        text_prompt.setText("Results:\nTaps with left hand: \n" + Arrays.toString(lefthand) + "\nTaps with right hand: \n" + Arrays.toString(righthand));
+        sendToSheets(lefthand, Sheets.TestType.LH_TAP);
+        sendToSheets(righthand, Sheets.TestType.RH_TAP);
     }
+
     // Enable button to count taps
     private int captureTaps() {
         taps = 0;
@@ -91,31 +111,39 @@ public class TapTestActivity extends Activity {
                 tap_test_button.setVisibility(View.GONE);
                 if (leftHandTaps == -1) {
                     leftHandTaps = taps;
-                    sendToSheets(leftHandTaps, Sheets.UpdateType.LH_TAP.ordinal());
+                    lefthand[count] = taps;
 
                     setStartView(right_hand_test_label);
-                } else if (rightHandTaps == -1){
+                } else if (rightHandTaps == -1) {
                     rightHandTaps = taps;
-                    sendToSheets(rightHandTaps, Sheets.UpdateType.RH_TAP.ordinal());
-
-                    setResultView();
+                    righthand[count] = taps;
+                    count++;
+                    leftHandTaps = -1;
+                    rightHandTaps = -1;
+                    setStartView(left_hand_test_label);
                 }
             }
         }.start();
         return taps;
     }
 
-    private void sendToSheets(int scores, int sheet) {
-        // Send data to sheets
-        Intent sheets = new Intent(this, Sheets.class);
+    private void sendToSheets(int[] scores, Sheets.TestType type) {
+//        // Send data to sheets
+//        Intent sheets = new Intent(this, Sheets.class);
 //
-        float temp = 1011;
+        sheet = new Sheets(this, this, getString(R.string.app_name), getString(R.string.class_sheet), getString(R.string.private_sheet));
 
-        sheets.putExtra(Sheets.EXTRA_VALUE, temp);
-        sheets.putExtra(Sheets.EXTRA_USER, getString(R.string.patientID));
-        sheets.putExtra(Sheets.EXTRA_TYPE, sheet);
+        float avg = 0;
+        float fScores[] = new float[scores.length];
+        for (int i = 0; i < 5; i++) {
+            avg += scores[i];
+            fScores[i] = scores[i];
+        }
+        avg = avg / 5;
 
-        startActivity(sheets);
+        sheet.writeData(type, getString(R.string.patientID), avg);
+        sheet.writeTrials(type, getString(R.string.patientID), fScores);
+
     }
 
     @Override
@@ -138,5 +166,40 @@ public class TapTestActivity extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public int getRequestCode(Sheets.Action action) {
+        switch (action) {
+            case REQUEST_ACCOUNT_NAME:
+                return 1001;
+            case REQUEST_AUTHORIZATION:
+                return 1002;
+            case REQUEST_PERMISSIONS:
+                return 1003;
+            case REQUEST_PLAY_SERVICES:
+                return 1004;
+            default:
+                return -1;
+        }
+    }
+
+    @Override
+    public void notifyFinished(Exception e) {
+        if (e != null) {
+            throw new RuntimeException(e);
+        }
+        Log.i(getClass().getSimpleName(), "Done");
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        this.sheet.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        this.sheet.onActivityResult(requestCode, resultCode, data);
     }
 }

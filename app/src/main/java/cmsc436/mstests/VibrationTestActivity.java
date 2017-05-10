@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -18,8 +20,10 @@ import java.util.Random;
 import java.util.ArrayList;
 
 import static android.os.SystemClock.uptimeMillis;
+import cmsc436.mstests.Sheets.Sheets;
 
-public class VibrationTestActivity extends Activity {
+
+public class VibrationTestActivity extends Activity implements Sheets.Host{
     private static final int NUM_OF_TRIAL = 10;
     String start_txt= "Prest start to begin the vibration test";
     TextView textView;
@@ -30,6 +34,7 @@ public class VibrationTestActivity extends Activity {
     long[] pattern;
     int yes =0, no =0, counter = 0;
     long startTime, totalTime, prevTime ;
+    private Sheets sheet;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,7 +120,7 @@ public class VibrationTestActivity extends Activity {
         yes_btn.setVisibility(View.INVISIBLE);
         no_btn.setVisibility(View.INVISIBLE);
         str = "Result: " + yes +"/10";
-        sendToSheets(yes, Sheets.UpdateType.VIBRATION.ordinal());
+        sendToSheets(yes, Sheets.TestType.VIBRATION);
         textView.setText(str);
     }
 
@@ -128,16 +133,53 @@ public class VibrationTestActivity extends Activity {
         v.vibrate(pattern, -1);
     }
 
-    private void sendToSheets(int scores, int sheet) {
+    private void sendToSheets(long scores, Sheets.TestType type) {
         // Send data to sheets
-        Intent sheets = new Intent(this, Sheets.class);
-//
-        float temp = 1011;
+        sheet = new Sheets(this, this, getString(R.string.app_name));
 
-        sheets.putExtra(Sheets.EXTRA_VALUE, temp);
-        sheets.putExtra(Sheets.EXTRA_USER, getString(R.string.patientID));
-        sheets.putExtra(Sheets.EXTRA_TYPE, sheet);
 
-        startActivity(sheets);
+        float[] result = {(float) scores};
+
+
+//        sheet.writeData(type, getString(R.string.patientID), result);
+        sheet.writeTrials(type, getString(R.string.patientID), result) ;
+
+
     }
+
+    @Override
+    public int getRequestCode(Sheets.Action action) {
+        switch (action) {
+            case REQUEST_ACCOUNT_NAME:
+                return 1001;
+            case REQUEST_AUTHORIZATION:
+                return 1002;
+            case REQUEST_PERMISSIONS:
+                return 1003;
+            case REQUEST_PLAY_SERVICES:
+                return 1004;
+            default:
+                return -1;
+        }
+    }
+
+    @Override
+    public void notifyFinished(Exception e) {
+        if (e != null) {
+            throw new RuntimeException(e);
+        }
+        Log.i(getClass().getSimpleName(), "Done");
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        this.sheet.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        this.sheet.onActivityResult(requestCode, resultCode, data);
+    }
+
 }

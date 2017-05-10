@@ -1,6 +1,7 @@
 package cmsc436.mstests;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -9,11 +10,14 @@ import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import edu.umd.cmsc436.sheets.Sheets;
 
-public class WalkingTestActivity extends Activity implements SensorEventListener, StepListener {
+public class WalkingTestActivity extends Activity implements SensorEventListener, StepListener, Sheets.Host {
 
     private TextView textView;
     private StepDetector simpleStepDetector;
@@ -24,6 +28,7 @@ public class WalkingTestActivity extends Activity implements SensorEventListener
     private TextView TvSteps;
     private Button BtnStart;
     private Stopwatch stopwatch;
+    private Sheets sheet;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,4 +113,39 @@ public class WalkingTestActivity extends Activity implements SensorEventListener
             }
 
         }
+
+    @Override
+    public int getRequestCode(edu.umd.cmsc436.sheets.Sheets.Action action) {
+        switch (action) {
+            case REQUEST_ACCOUNT_NAME:
+                return 1001;
+            case REQUEST_AUTHORIZATION:
+                return 1002;
+            case REQUEST_PERMISSIONS:
+                return 1003;
+            case REQUEST_PLAY_SERVICES:
+                return 1004;
+            default:
+                return -1;
+        }
+    }
+
+    @Override
+    public void notifyFinished(Exception e) {
+        if (e != null) {
+            throw new RuntimeException(e);
+        }
+        Log.i(getClass().getSimpleName(), "Done");
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        this.sheet.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        this.sheet.onActivityResult(requestCode, resultCode, data);
+    }
 }

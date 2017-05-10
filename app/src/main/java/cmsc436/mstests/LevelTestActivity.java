@@ -11,15 +11,21 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.os.CountDownTimer;
+import android.support.annotation.FloatRange;
+import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.Date;
 
+import edu.umd.cmsc436.sheets.Sheets;
 
 @TargetApi(Build.VERSION_CODES.CUPCAKE)
-public class LevelTestActivity extends Activity {
+public class LevelTestActivity extends Activity implements Sheets.Host{
     private SensorManager senSensorManager;
     private Sensor senAccelerometer;
     float x, y, z;
@@ -32,7 +38,8 @@ public class LevelTestActivity extends Activity {
     String start_label = "Push to start test";
     double score, left_hand_score = -1 , right_hand_score = -1;
     private LevelView visual;
-
+    private Sheets sheet;
+    Date date;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,23 +121,24 @@ public class LevelTestActivity extends Activity {
     //set result
     public void resultView() {
        // text_prompt.setText("Your score is : " + Math.round(score));
-        sendToSheets((int) Math.round(left_hand_score), Sheets.UpdateType.LH_LEVEL.ordinal());
-        sendToSheets((int) Math.round(right_hand_score), Sheets.UpdateType.RH_LEVEL.ordinal());
+        sendToSheets((int) Math.round(left_hand_score), Sheets.TestType.LH_LEVEL);
+        sendToSheets((int) Math.round(right_hand_score), Sheets.TestType.RH_LEVEL);
 
         text_prompt.setText("Results:\n Left hand: " + Math.round(left_hand_score) +
                 "\nRight hand: " + Math.round(right_hand_score));
     }
-    private void sendToSheets(int scores, int sheet) {
+    private void sendToSheets(int scores, Sheets.TestType type) {
         // Send data to sheets
-        Intent sheets = new Intent(this, Sheets.class);
-//
-        float temp = 1011;
+        sheet = new Sheets(this, this, getString(R.string.app_name), getString(R.string.class_sheet), getString(R.string.private_sheet));
 
-        sheets.putExtra(Sheets.EXTRA_VALUE, temp);
-        sheets.putExtra(Sheets.EXTRA_USER, getString(R.string.patientID));
-        sheets.putExtra(Sheets.EXTRA_TYPE, sheet);
 
-        startActivity(sheets);
+        float[] result = {(float) scores};
+
+
+//        sheet.writeData(type, getString(R.string.patientID), result);
+        sheet.writeTrials(type, getString(R.string.patientID), result) ;
+
+
     }
 
     private final SensorEventListener listener = new SensorEventListener() {
@@ -175,6 +183,41 @@ public class LevelTestActivity extends Activity {
             return false;
         }
         };
+
+    @Override
+    public int getRequestCode(Sheets.Action action) {
+        switch (action) {
+            case REQUEST_ACCOUNT_NAME:
+                return 1001;
+            case REQUEST_AUTHORIZATION:
+                return 1002;
+            case REQUEST_PERMISSIONS:
+                return 1003;
+            case REQUEST_PLAY_SERVICES:
+                return 1004;
+            default:
+                return -1;
+        }
+    }
+
+    @Override
+    public void notifyFinished(Exception e) {
+        if (e != null) {
+            throw new RuntimeException(e);
+        }
+        Log.i(getClass().getSimpleName(), "Done");
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        this.sheet.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        this.sheet.onActivityResult(requestCode, resultCode, data);
+    }
 }
 
 

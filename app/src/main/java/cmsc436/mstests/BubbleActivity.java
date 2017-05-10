@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -11,12 +13,13 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import static android.R.attr.data;
+import edu.umd.cmsc436.sheets.Sheets;
 
-public class BubbleActivity extends Activity {
+public class BubbleActivity extends Activity implements Sheets.Host{
 
     final static String SCORE = "SCORE";
     final static String DATA = "DATA";
-
+    private Sheets sheet;
     BubbleView.OnBubbleUpdateListener bubbleUpdateListener;
     private static long num_sec = 0;
     int counter = 0;
@@ -28,7 +31,7 @@ public class BubbleActivity extends Activity {
     String left_hand_test_label = "Press the button to use your hand and pop the bubble";
     String right_hand_test_label = "Press the button to use your right hand to pop the bubble";
     String start_label = "Push to start test";
-
+    boolean lefthand = false;
 
 
     @Override
@@ -39,7 +42,6 @@ public class BubbleActivity extends Activity {
         timeView = (TextView) findViewById(R.id.timeView);
         startButton = (Button) findViewById(R.id.start_bubble_button);
         bubble1 = (BubbleView) findViewById(R.id.bubble1);
-
         bubble1.setOnBubbleUpdateListener(new BubbleView.OnBubbleUpdateListener() {
             @Override
             public void onBubbleUpdate() {
@@ -70,6 +72,7 @@ public class BubbleActivity extends Activity {
                         intent.putExtra(SCORE,bubble1.getAverageTime());
                         startButton.setVisibility(View.GONE);
                         timeView.setText("AverageTime: " + bubble1.getAverageTime());
+                        sendToSheets(bubble1.getAverageTime(), Sheets.TestType.LH_POP);
                         setResult(RESULT_OK,intent);
                             finish();
                         //}
@@ -101,18 +104,18 @@ public class BubbleActivity extends Activity {
         });
     }
 
-    private void sendToSheets(double scores, int sheet) {
+    private void sendToSheets(long scores, Sheets.TestType type) {
         // Send data to sheets
-        Intent sheets = new Intent(this, Sheets.class);
+        sheet = new Sheets(this, this, getString(R.string.app_name), getString(R.string.class_sheet), getString(R.string.private_sheet));
 
-        // just to test if it works
-        float temp = 1011;
 
-        sheets.putExtra(Sheets.EXTRA_VALUE, temp);
-        sheets.putExtra(Sheets.EXTRA_USER, getString(R.string.patientID));
-        sheets.putExtra(Sheets.EXTRA_TYPE, sheet);
+        float[] result = {(float) scores};
 
-        startActivity(sheets);
+
+//        sheet.writeData(type, getString(R.string.patientID), result);
+        sheet.writeTrials(type, getString(R.string.patientID), result) ;
+
+
     }
 
     //Start countdown
@@ -128,6 +131,41 @@ public class BubbleActivity extends Activity {
                 bubble1.startGame();
             }
         }.start();
+    }
+
+    @Override
+    public int getRequestCode(edu.umd.cmsc436.sheets.Sheets.Action action) {
+        switch (action) {
+            case REQUEST_ACCOUNT_NAME:
+                return 1001;
+            case REQUEST_AUTHORIZATION:
+                return 1002;
+            case REQUEST_PERMISSIONS:
+                return 1003;
+            case REQUEST_PLAY_SERVICES:
+                return 1004;
+            default:
+                return -1;
+        }
+    }
+
+    @Override
+    public void notifyFinished(Exception e) {
+        if (e != null) {
+            throw new RuntimeException(e);
+        }
+        Log.i(getClass().getSimpleName(), "Done");
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        this.sheet.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        this.sheet.onActivityResult(requestCode, resultCode, data);
     }
 
 }

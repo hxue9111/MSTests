@@ -5,16 +5,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import edu.umd.cmsc436.sheets.Sheets;
 
-public class BicepLegTestActivity extends Activity {
-
+public class BicepLegTestActivity extends Activity implements Sheets.Host{
+    private Sheets sheet;
     private SensorManager senSensorManager;
     private Sensor senAccelerometer;
     TextView tv;
@@ -181,26 +184,29 @@ public class BicepLegTestActivity extends Activity {
     private void setResultsView(){
         start_button.setVisibility(View.GONE);
         done_button.setVisibility(View.GONE);
-        sendToSheets(la_avg, Sheets.UpdateType.LH_CURL.ordinal());
-        sendToSheets(ra_avg, Sheets.UpdateType.RH_CURL.ordinal());
-
+        sendToSheets(la_avg, Sheets.TestType.LH_CURL);
+        sendToSheets(ra_avg, Sheets.TestType.RH_CURL);
+        sendToSheets(ll_avg, Sheets.TestType.LF_CURL);
+        sendToSheets(rl_avg, Sheets.TestType.RF_CURL);
         tv.setText("Average Time Per Curl Results\n\n" +
                 "Right Arm: " + ra_avg + " seconds" +
                 "\nLeft Arm: " + la_avg + " seconds" +
                 "\nRight Leg: " + rl_avg + " seconds" +
                 "\nLeft Leg: " + ll_avg + " seconds");
     }
-    private void sendToSheets(double scores, int sheet) {
+
+    private void sendToSheets(double scores, Sheets.TestType type) {
         // Send data to sheets
-        Intent sheets = new Intent(this, Sheets.class);
-//
-        float temp = 1011;
+        sheet = new Sheets(this, this, getString(R.string.app_name), getString(R.string.class_sheet), getString(R.string.private_sheet));
 
-        sheets.putExtra(Sheets.EXTRA_VALUE, temp);
-        sheets.putExtra(Sheets.EXTRA_USER, getString(R.string.patientID));
-        sheets.putExtra(Sheets.EXTRA_TYPE, sheet);
 
-        startActivity(sheets);
+        float[] result = {(float) scores};
+
+
+//        sheet.writeData(type, getString(R.string.patientID), result);
+        sheet.writeTrials(type, getString(R.string.patientID), result) ;
+
+
     }
     private double average(ArrayList<Long> arr){
         double l = 0;
@@ -217,4 +223,38 @@ public class BicepLegTestActivity extends Activity {
 
     }
 
+    @Override
+    public int getRequestCode(edu.umd.cmsc436.sheets.Sheets.Action action) {
+        switch (action) {
+            case REQUEST_ACCOUNT_NAME:
+                return 1001;
+            case REQUEST_AUTHORIZATION:
+                return 1002;
+            case REQUEST_PERMISSIONS:
+                return 1003;
+            case REQUEST_PLAY_SERVICES:
+                return 1004;
+            default:
+                return -1;
+        }
+    }
+
+    @Override
+    public void notifyFinished(Exception e) {
+        if (e != null) {
+            throw new RuntimeException(e);
+        }
+        Log.i(getClass().getSimpleName(), "Done");
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        this.sheet.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        this.sheet.onActivityResult(requestCode, resultCode, data);
+    }
 }

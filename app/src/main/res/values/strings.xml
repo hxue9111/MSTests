@@ -4,6 +4,8 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_tap_test">TapTestActivity</string>
-    <string name="patientID">t06p01</string>
-
+    <string name="patientID">t17p01</string>
+    <string name="class_sheet">1YvI3CjS4ZlZQDYi5PaiA7WGGcoCsZfLoSFM0IdvdbDU</string>
+    <string name="private_sheet">1Nvpl_Vb4_RIgNAU2yHPIDy0JLvhcitfq47CBO7tmplw</string>
+    <string name="img_folder">0BzVAnI4alztxc3FaQVdDVUx3bWc</string>
 </resources>

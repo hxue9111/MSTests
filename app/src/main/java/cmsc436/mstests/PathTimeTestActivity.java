@@ -16,8 +16,10 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -38,9 +40,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
+import edu.umd.cmsc436.sheets.Sheets;
 
 public class PathTimeTestActivity extends Activity
-        implements OnMapReadyCallback {
+        implements OnMapReadyCallback, Sheets.Host {
     Button start_stop;
     TextView prompt;
     GoogleMap map;
@@ -48,6 +51,7 @@ public class PathTimeTestActivity extends Activity
     boolean mIsBound;
     private LocationService mBoundService;
     Polyline mapLine;
+    private Sheets sheet;
 
     private ServiceConnection mConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder service) {
@@ -264,8 +268,7 @@ public class PathTimeTestActivity extends Activity
         doUnbindService();
     }
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
             case 0: {
                 // If request is cancelled, the result arrays are empty.
@@ -335,5 +338,36 @@ public class PathTimeTestActivity extends Activity
             e.printStackTrace();
             Toast.makeText(getApplicationContext(), "error", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public int getRequestCode(edu.umd.cmsc436.sheets.Sheets.Action action) {
+        switch (action) {
+            case REQUEST_ACCOUNT_NAME:
+                return 1001;
+            case REQUEST_AUTHORIZATION:
+                return 1002;
+            case REQUEST_PERMISSIONS:
+                return 1003;
+            case REQUEST_PLAY_SERVICES:
+                return 1004;
+            default:
+                return -1;
+        }
+    }
+
+    @Override
+    public void notifyFinished(Exception e) {
+        if (e != null) {
+            throw new RuntimeException(e);
+        }
+        Log.i(getClass().getSimpleName(), "Done");
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        this.sheet.onActivityResult(requestCode, resultCode, data);
     }
 }

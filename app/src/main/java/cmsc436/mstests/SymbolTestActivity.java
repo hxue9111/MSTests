@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.speech.RecognizerIntent;
+import android.support.annotation.NonNull;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -31,7 +32,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
-public class SymbolTestActivity extends Activity {
+import cmsc436.mstests.Sheets.Sheets;
+
+
+public class SymbolTestActivity extends Activity implements Sheets.Host {
+    private Sheets sheet;
     double start_time,end_time;
     Button start_button ;
     Button speech_recog;
@@ -49,6 +54,7 @@ public class SymbolTestActivity extends Activity {
     ArrayList<Integer> numbers;
     HashMap<Integer,ArrayList<Double>> symbolTimes;
     TextView trialresults ;
+    int learnabiltiy = 0;
     double totalAverage = 0;
     protected static final int RESULT_SPEECH = 100;
 
@@ -104,7 +110,7 @@ public class SymbolTestActivity extends Activity {
             @Override
             public void onClick(View v) {
 //                prompt.setVisibility(View.INVISIBLE);
-                new CountDownTimer(90000,1000) {
+                new CountDownTimer(10000,1000) {
                     @Override
                     public void onTick(long millisUntilFinished) {
                         prompt.setText("Seconds remaining: " + millisUntilFinished / 1000);
@@ -148,6 +154,26 @@ public class SymbolTestActivity extends Activity {
             str = str + "Trial "+ (i+1) + " : " + trials.get(i) + " / " + trials_check.get(i) + " \n";
         }
         result.setText(str.replace("\\n",System.lineSeparator()));
+
+        sendToSheets(Sheets.TestType.SYMBOL, totalAverage, numSymbolCorrect);
+    }
+
+    private void sendToSheets(Sheets.TestType type, double result, int correctSymbols) {
+        //sheet.writeData(sheetType, getString(R.string.patientID), (float)result);
+        sheet = new Sheets(this, this, getString(R.string.app_name));
+
+        float[] temp = new float[trials.size()];
+        double[] temp2 = new double[trials.size()];
+        for(int i=0; i<temp2.length; i++) {
+            temp2[i] = trials.get(i);
+        }
+        for(int i=0; i<temp.length; i++) {
+            temp[i] = (float) temp2[i];
+        }
+        float[] centralSheetData = {(float) result, (float) correctSymbols, (float) learnabiltiy};
+        sheet.writeData(type,getString(R.string.patientID), centralSheetData) ;
+        sheet.writeTrials(type, getString(R.string.patientID), temp);
+//        sheet.writeTrials(type, getString(R.string.patientID), (float)correctSymbols);
     }
     private String calcAverage() {
         double firstHalfAvg = 0, secondHalfAvg =0;
@@ -176,6 +202,7 @@ public class SymbolTestActivity extends Activity {
         totalAverage = (double)Math.round(totalAverage * 100000d) / 100000d;
 
         String resultprompt = "Number of correct answer : " + numSymbolCorrect +".\n"+ "Average Time: " + totalAverage + "s\n" + "Learn Ability (Scale 0-9): ";
+        learnabiltiy = fasterAnswer;
         return resultprompt + fasterAnswer;
     }
     public void doTest() {
@@ -365,4 +392,34 @@ public class SymbolTestActivity extends Activity {
         }
 
     }
+
+    @Override
+    public int getRequestCode(Sheets.Action action) {
+        switch (action) {
+            case REQUEST_ACCOUNT_NAME:
+                return 1001;
+            case REQUEST_AUTHORIZATION:
+                return 1002;
+            case REQUEST_PERMISSIONS:
+                return 1003;
+            case REQUEST_PLAY_SERVICES:
+                return 1004;
+            default:
+                return -1;
+        }
+    }
+
+    @Override
+    public void notifyFinished(Exception e) {
+        if (e != null) {
+            throw new RuntimeException(e);
+        }
+        Log.i(getClass().getSimpleName(), "Done");
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        this.sheet.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
 }
