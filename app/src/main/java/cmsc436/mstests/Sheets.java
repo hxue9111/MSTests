@@ -73,7 +73,7 @@ public class Sheets extends Activity
         LH_SPIRAL, RH_SPIRAL,
         LH_LEVEL, RH_LEVEL,
         LH_POP, RH_POP,
-        LH_CURL, RH_CURL
+        LH_CURL, RH_CURL, VIBRATION
     }
 
     /**
@@ -169,6 +169,8 @@ public class Sheets extends Activity
                 return "'Curling Test (RH)'";
             case LH_CURL:
                 return "'Curling Test (LH)'";
+            case VIBRATION:
+                return "'Vibration Test'";
             default:
                 return null;
         }
