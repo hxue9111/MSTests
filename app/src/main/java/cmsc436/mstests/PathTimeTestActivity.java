@@ -1,6 +1,5 @@
 package cmsc436.mstests;
 
-import android.*;
 import android.Manifest;
 import android.app.Activity;
 import android.content.ComponentName;
@@ -8,32 +7,37 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.Path;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
+import android.media.MediaScannerConnection;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Environment;
 import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
-import org.w3c.dom.Text;
-
-import java.lang.reflect.Array;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class PathTimeTestActivity extends Activity
         implements OnMapReadyCallback {
@@ -43,6 +47,7 @@ public class PathTimeTestActivity extends Activity
     MapFragment mapFragment;
     boolean mIsBound;
     private LocationService mBoundService;
+    Polyline mapLine;
 
     private ServiceConnection mConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder service) {
@@ -113,21 +118,46 @@ public class PathTimeTestActivity extends Activity
         doBindService();
         prompt.setVisibility(View.VISIBLE);
         prompt.setText("Currently tracking path.");
+        final Timer T=new Timer();
+        T.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        if (mIsBound) {
+                            long score = getTimeElapsed();
+                            prompt.setText("Current travel time: " + score + " seconds");
+                            updateLine();
+                        }
+                    }
+                });
+            }
+        }, 1000, 1000);
         start_stop.setText("End test");
         start_stop.setEnabled(true);
         start_stop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 start_stop.setVisibility(View.GONE);
+                T.cancel();
                 if (mIsBound) {
-                    long score = score();
-                    prompt.setText("Time taken to travel path: " + score + " seconds");
-                    drawPathOnMap();
-                    mapFragment.getView().setVisibility(View.VISIBLE);
+                    long score = getTimeElapsed();
+                    double dist = Math.round(getDistanceTraveled()*100)/100;
+                    prompt.setText(dist +" meters traveled in: " + score + " seconds");
+                    map.snapshot(new GoogleMap.SnapshotReadyCallback() {
+                        @Override
+                        public void onSnapshotReady(Bitmap bitmap) {
+                            saveMap(bitmap);
+                        }
+                    });
                     doUnbindService();
                 }
             }
         });
+        drawPathOnMap();
     }
     private void requestPermissions() {
         if (ContextCompat.checkSelfPermission(PathTimeTestActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION)
@@ -164,34 +194,69 @@ public class PathTimeTestActivity extends Activity
     }
 
     public void drawPathOnMap() {
+        mapFragment.getView().setVisibility(View.VISIBLE);
+
         try {
             map.setMyLocationEnabled(true);
-
 
             LocationManager locationManager = (LocationManager)
                     getSystemService(Context.LOCATION_SERVICE);
 
             Location location = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
 
-            map.animateCamera(CameraUpdateFactory.newLatLngZoom(
-                    new LatLng(location.getLatitude(),location.getLongitude()), 20));
+            if(location != null) {
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                        new LatLng(location.getLatitude(),location.getLongitude()), 20));
+            }
         } catch(SecurityException e) {
 
         }
 
-        ArrayList<LatLng> pts = mBoundService.getPoints();
+        ArrayList<LatLng> pts = new ArrayList<>();
         PolylineOptions lineOpts = new PolylineOptions();
         lineOpts.addAll(pts);
         lineOpts.width(10);
         lineOpts.color(Color.RED);
-        map.addPolyline(lineOpts);
+        mapLine = map.addPolyline(lineOpts);
         if (!pts.isEmpty()) {
             map.moveCamera(CameraUpdateFactory.newLatLng(pts.get(0)));
         }
-
     }
-    public long score(){
-        return (System.currentTimeMillis()-mBoundService.getStartTime())/1000;
+    public void updateLine(){
+        if(mapLine != null) {
+            if (mapLine.getPoints().size() != mBoundService.getPoints().size()) {
+                mapLine.setPoints(mBoundService.getPoints());
+
+
+                try{
+                    LocationManager locationManager = (LocationManager)
+                            getSystemService(Context.LOCATION_SERVICE);
+
+                    Location location = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+
+                    if(location != null) {
+                        map.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                                new LatLng(location.getLatitude(),location.getLongitude()), 20));
+                    }
+
+                }catch(SecurityException e){
+
+                }
+            }
+
+        }
+    }
+    public long getTimeElapsed(){
+        if (mIsBound){
+            return (System.currentTimeMillis()-mBoundService.getStartTime())/1000;
+        }
+        else return 0;
+    }
+    public double getDistanceTraveled(){
+        if (mIsBound){
+            return mBoundService.getTravelDistance();
+        }
+        else return 0;
     }
     @Override
     protected void onDestroy() {
@@ -220,6 +285,55 @@ public class PathTimeTestActivity extends Activity
 
             // other 'case' lines to check for other
             // permissions this app might request
+        }
+    }
+    private void saveMap(Bitmap map) {
+        if (ContextCompat.checkSelfPermission(PathTimeTestActivity.this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(PathTimeTestActivity.this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+
+            } else {
+
+                // No explanation needed, we can request the permission.
+
+                ActivityCompat.requestPermissions(PathTimeTestActivity.this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        0);
+
+                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
+            }
+        }
+
+        final String FILENAME = "outdoorwalkingpath";
+        final String DATE_FORMAT_NOW = "yyyy-MM-dd_HH:mm:ss";
+
+        String date = new SimpleDateFormat(DATE_FORMAT_NOW).format(new Date());
+
+        File file = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DOWNLOADS),FILENAME + date +".png");
+        FileOutputStream ostream;
+        try {
+            System.out.println(file.getAbsoluteFile());
+            file.createNewFile();
+            ostream = new FileOutputStream(file);
+            map.compress(Bitmap.CompressFormat.PNG, 100, ostream);
+            ostream.flush();
+            ostream.close();
+            MediaScannerConnection.scanFile(this, new String[] {file.getAbsolutePath().toString()}, null, null);
+            Toast.makeText(getApplicationContext(), "Image saved", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(getApplicationContext(), "error", Toast.LENGTH_SHORT).show();
         }
     }
 }

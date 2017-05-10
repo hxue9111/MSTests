@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.lang.reflect.Array;
@@ -24,6 +25,7 @@ public class LocationService extends Service {
     private LocationManager mLocationManager = null;
     private static final int LOCATION_INTERVAL = 1000;
     private static final float LOCATION_DISTANCE = 1;
+    private double travelDistance; // meters
     private ArrayList<LatLng> points = new ArrayList<>();
     private long start_time;
     private class ServiceLocationListener implements LocationListener {
@@ -39,6 +41,9 @@ public class LocationService extends Service {
             System.out.println("Long : " + location.getLongitude());
             if(mLastLocation.getLongitude() != location.getLongitude() || mLastLocation.getLatitude() != location.getLatitude()) {
                 points.add(new LatLng(location.getLatitude(), location.getLongitude()));
+                if(points.size() > 1) {
+                    travelDistance += mLastLocation.distanceTo(location);
+                }
                 mLastLocation.set(location);
             }
         }
@@ -72,6 +77,7 @@ public class LocationService extends Service {
     public long getStartTime(){
         return start_time;
     }
+    public double getTravelDistance() {return travelDistance;}
     public ArrayList<LatLng> getPoints() {
         return new ArrayList<>(points);
     }
@@ -80,6 +86,7 @@ public class LocationService extends Service {
     public IBinder onBind(Intent arg0)
     {
         start_time = System.currentTimeMillis();
+        travelDistance = 0;
         return mBinder;
     }
     @Override
@@ -123,4 +130,5 @@ public class LocationService extends Service {
             mLocationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         }
     }
+
 }
