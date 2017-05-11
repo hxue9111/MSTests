@@ -110,7 +110,7 @@ public class SymbolTestActivity extends Activity implements Sheets.Host {
             @Override
             public void onClick(View v) {
 //                prompt.setVisibility(View.INVISIBLE);
-                new CountDownTimer(10000,1000) {
+                new CountDownTimer(90000,1000) {
                     @Override
                     public void onTick(long millisUntilFinished) {
                         prompt.setText("Seconds remaining: " + millisUntilFinished / 1000);
