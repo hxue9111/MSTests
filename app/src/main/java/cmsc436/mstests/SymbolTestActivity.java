@@ -110,7 +110,7 @@ public class SymbolTestActivity extends Activity implements Sheets.Host {
             @Override
             public void onClick(View v) {
 //                prompt.setVisibility(View.INVISIBLE);
-                new CountDownTimer(90000,1000) {
+                new CountDownTimer(10000,1000) {
                     @Override
                     public void onTick(long millisUntilFinished) {
                         prompt.setText("Seconds remaining: " + millisUntilFinished / 1000);
@@ -156,6 +156,7 @@ public class SymbolTestActivity extends Activity implements Sheets.Host {
         result.setText(str.replace("\\n",System.lineSeparator()));
 
         sendToSheets(Sheets.TestType.SYMBOL, totalAverage, numSymbolCorrect);
+        sendToSheets_str(Sheets.TestType.SYMBOL_CORRECT);
     }
 
     private void sendToSheets(Sheets.TestType type, double result, int correctSymbols) {
@@ -175,7 +176,22 @@ public class SymbolTestActivity extends Activity implements Sheets.Host {
         sheet.writeTrials(type, getString(R.string.patientID), temp);
 //        sheet.writeTrials(type, getString(R.string.patientID), (float)correctSymbols);
     }
-    private String calcAverage() {
+    private void sendToSheets_str(Sheets.TestType type) {
+        sheet = new Sheets(this, this, getString(R.string.app_name));
+        float[] test = new float[trials_check.size()];
+        for(int i=0; i<trials_check.size(); i++){
+            if(trials_check.get(i).equals("CORRECT")) {
+                test[i] = 1;
+            }
+            else {
+                test[i] = 0;
+            }
+        }
+        sheet.writeTrials(type, getString(R.string.patientID), test);
+
+    }
+
+        private String calcAverage() {
         double firstHalfAvg = 0, secondHalfAvg =0;
         int fasterAnswer = 0;
         for(ArrayList<Double> list: symbolTimes.values()) {

@@ -282,7 +282,7 @@ public class Sheets implements GoogleApiClient.ConnectionCallbacks, GoogleApiCli
         VIBRATION("'Vibration Test'"),
         LH_SPIRAL_TIME("'Spiral Test (LH) Time'"),
         RH_SPIRAL_TIME("'Spiral Test (RH) Time'"),
-        SYMBOL_CORRECT("'Symbol Test (Correct Symbols)'");
+        SYMBOL_CORRECT("'Symbol Test Correctness'");
 
         private final String id;
 
