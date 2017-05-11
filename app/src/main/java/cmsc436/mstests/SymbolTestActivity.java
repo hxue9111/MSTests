@@ -155,11 +155,11 @@ public class SymbolTestActivity extends Activity implements Sheets.Host {
         }
         result.setText(str.replace("\\n",System.lineSeparator()));
 
-        sendToSheets(Sheets.TestType.SYMBOL, totalAverage, numSymbolCorrect);
+        sendToSheets(Sheets.TestType.SYMBOL, Sheets.TestType.SYMBOL_CENTRAL, totalAverage, numSymbolCorrect);
         sendToSheets_str(Sheets.TestType.SYMBOL_CORRECT);
     }
 
-    private void sendToSheets(Sheets.TestType type, double result, int correctSymbols) {
+    private void sendToSheets(Sheets.TestType type, Sheets.TestType type2, double result, int correctSymbols) {
         //sheet.writeData(sheetType, getString(R.string.patientID), (float)result);
         sheet = new Sheets(this, this, getString(R.string.app_name));
 
@@ -173,6 +173,7 @@ public class SymbolTestActivity extends Activity implements Sheets.Host {
         }
         float[] centralSheetData = {(float) result, (float) correctSymbols, (float) learnabiltiy};
         sheet.writeData(type,getString(R.string.patientID), centralSheetData) ;
+        sheet.writeTrials(type2, getString(R.string.patientID), centralSheetData);
         sheet.writeTrials(type, getString(R.string.patientID), temp);
 //        sheet.writeTrials(type, getString(R.string.patientID), (float)correctSymbols);
     }

@@ -278,11 +278,12 @@ public class Sheets implements GoogleApiClient.ConnectionCallbacks, GoogleApiCli
         SWAY_MOVEMENT("'Sway Test (Movement)'"),
         INDOOR_WALKING("'Walking Test (IN)'"),
         OUTDOOR_WALKING("'Walking Test (OUT)'"),
-        SYMBOL("'Symbol Test'"),
+        SYMBOL("'Symbol Test (Raw)'"),
         VIBRATION("'Vibration Test'"),
         LH_SPIRAL_TIME("'Spiral Test (LH) Time'"),
         RH_SPIRAL_TIME("'Spiral Test (RH) Time'"),
-        SYMBOL_CORRECT("'Symbol Test Correctness'");
+        SYMBOL_CENTRAL("'Symbol Test (Central)'"),
+        SYMBOL_CORRECT("'Symbol Test (Correctness)'");
 
         private final String id;
 
